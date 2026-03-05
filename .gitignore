@@ -1,0 +1,44 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific settings
+.vs/
+*.user
+*.suo
+
+# Ignore build output
+bin/
+obj/
+
+# Ignore SDK and dependency files
+*.rsuser
+*.sln.docstates
+*.log
+*.cache
+*.pdb
+*.mdb
+*.db
+
+# Ignore any temporary files created by the OS or editor
+Thumbs.db
+Desktop.ini
+*.DS_Store
+
+# Ignore NuGet packages
+packages/
+project.lock.json
+project.fragment.lock.json
+*.nupkg
+*.snupkg
+.nuget/
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.*
+
+# Ignore appsettings files with sensitive data
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json

@@ -1,0 +1,6 @@
+@CoopApplication_HostAddress = http://localhost:5124
+
+GET {{CoopApplication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
