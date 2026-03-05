@@ -1,5 +1,7 @@
 ﻿using AdmissionService.Infrastructure.Persistence.Extensions;
 using CoopApplication.Persistence.Context;
+using CoopApplication.Persistence.Repository.Implementations;
+using CoopApplication.Persistence.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +29,8 @@ namespace CoopApplication.Persistence.Extension
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             //Add Repository 
-
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUnitofWork, UnitOfWork>();
             return services;
         }
     }

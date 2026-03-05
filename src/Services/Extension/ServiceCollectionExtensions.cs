@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CoopApplication.Services.Implementations;
+using CoopApplication.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ namespace CoopApplication.Services.Extension
         {
             //Add Services
 
-
+            services.AddScoped<IRoleService, RoleService>();
             return services;
         }
     }

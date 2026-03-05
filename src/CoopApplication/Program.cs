@@ -1,5 +1,6 @@
 using AdmissionService.Infrastructure.Persistence.Extensions;
 using CoopApplication.api.Extension;
+using CoopApplication.api.Middleware;
 using CoopApplication.Persistence.Extension;
 using CoopApplication.Services.Extension;
 using Dayspring_Backend.Extension;
@@ -17,6 +18,7 @@ builder.Services.AddLogging();
 builder.Services.AddEndpointsApiExplorer()
     .AddRepositories()
     .AddServices()
+    .ConfigureApiVersioning()
     .AddSwagger();
 builder.Services.ConfigureMvc();
 
@@ -25,6 +27,7 @@ builder.Services.ConfigureMvc();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.ConfigureExceptionHandler();
 app.ConfigureCORS();
 app.ConfigureSwagger();
 app.UseHttpsRedirection();

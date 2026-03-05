@@ -16,7 +16,6 @@ namespace Dayspring_Backend.Extension
 {
     public static class ServiceCollectionExtensions
     {
-        
         public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
         {
             services.AddCors(options =>
@@ -65,7 +64,7 @@ namespace Dayspring_Backend.Extension
         }
 
 
-        public static void ConfigureApiVersioning(this IServiceCollection services)
+        public static IServiceCollection ConfigureApiVersioning(this IServiceCollection services)
         {
             services.AddApiVersioning(config =>
             {
@@ -74,9 +73,17 @@ namespace Dayspring_Backend.Extension
                 config.ReportApiVersions = true;
                 config.ApiVersionReader = new HeaderApiVersionReader("api-version");
             });
+
+            //services.AddVersionedApiExplorer(options =>
+            //{
+            //    options.GroupNameFormat = "'v'VVV";
+            //    options.SubstituteApiVersionInUrl = true;
+            //});
+
+            return services;
         }
 
-        public static void AddSwagger(this IServiceCollection services)
+        public static IServiceCollection AddSwagger(this IServiceCollection services)
         {
 
             services.AddSwaggerGen(c =>
@@ -84,12 +91,12 @@ namespace Dayspring_Backend.Extension
                 c.SwaggerDoc("v1",
                     new()
                     {
-                        Title = "Admission Service",
+                        Title = "Coop Application API",
                         Version = "v1",
                         Contact = new()
                         {
-                            Name = "E-mail",
-                            Email = "info@sysbeams.com"
+                            Name = "Airis",
+                            Email = "airisoluwa@gmail.com"
                         }
                     });
 
@@ -105,21 +112,32 @@ namespace Dayspring_Backend.Extension
                     Items = new OpenApiSchema { Type = "string", Format = "binary" }
                 });
 
-                c.AddSecurityRequirement(new()
-           {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    new()
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' followed by your token (e.g., Bearer eyJhbGciOi...)"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
-                        Reference = new()
+                        new OpenApiSecurityScheme
                         {
-                            Id = "OAuth2",
-                            Type = ReferenceType.SecurityScheme
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
                         },
-                    },
-                    new List<string>()
-                }
-           });
+                        Array.Empty<string>()
+                    }
+                });
             });
+
+            return services;
         }
 
         public static void ConfigureMvc(this IServiceCollection serviceCollection)

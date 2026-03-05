@@ -1,0 +1,6 @@
+﻿namespace CoopApplication.api.Exceptions
+{
+    public class NotFoundException (string message) : Exception(message);
+    public class SaveOperationException (string message) : Exception(message);
+    public class AlreadyExistException(string message) : Exception(message);
+}

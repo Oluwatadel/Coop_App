@@ -7,12 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entity Configuration\" />
-    <Folder Include="Repository\Interfaces\" />
-    <Folder Include="Repository\Implementations\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="Mapster.Async" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.13">
       <PrivateAssets>all</PrivateAssets>
@@ -26,6 +22,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.13" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoopApplication.Domain\CoopApplication.Domain.csproj" />
   </ItemGroup>
 
 </Project>
