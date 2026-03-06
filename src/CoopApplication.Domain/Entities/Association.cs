@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace CoopApplication.Domain.Entities
 {
-    public class Role : Auditable
+    public class Association : Auditable
     {
         public string Name { get; set; } = default!;
-        //public ICollection<User> Users { get; set; } = new List<User>(); #Mr T decide on this
-
-        public Role(string name)
+        public ICollection<User> Users { get; set; } = new List<User>();
+        public Association(string name)
         {
             Name = name;
         }

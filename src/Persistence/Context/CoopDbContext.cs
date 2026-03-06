@@ -8,6 +8,12 @@ namespace CoopApplication.Persistence.Context
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Association> Associations { get; set; }
+        public DbSet<LoanType> LoanTypes { get; set; }
+        public DbSet<LoanTaken> LoanTaken { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
