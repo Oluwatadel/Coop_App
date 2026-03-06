@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Repository\Interfaces\IAccount.Repository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.Async" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.13" />
