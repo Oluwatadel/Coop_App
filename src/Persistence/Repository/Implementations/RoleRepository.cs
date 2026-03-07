@@ -8,7 +8,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
 {
     public class RoleRepository(CoopDbContext context) : IRoleRepository
     {
-        public async Task<Role> CreateRoleAsynce(Role role, CancellationToken cancellationToken)
+        public async Task<Role> CreateRoleAsync(Role role, CancellationToken cancellationToken)
         {
             await context.Roles.AddAsync(role, cancellationToken);
             return role;

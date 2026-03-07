@@ -9,7 +9,7 @@ namespace CoopApplication.Persistence.Repository.Interfaces
 {
     public interface IRoleRepository
     {
-        Task<Role> CreateRoleAsynce(Role role, CancellationToken cancellationToken);
+        Task<Role> CreateRoleAsync(Role role, CancellationToken cancellationToken);
         Task<Role?> GetRoleByIdAsync(Guid roleId, CancellationToken cancellationToken);
         Task<Role?> GetRoleByNameAsync(string roleName, CancellationToken cancellationToken);
         Task<bool> ExistAsync(string roleName, CancellationToken cancellationToken);
