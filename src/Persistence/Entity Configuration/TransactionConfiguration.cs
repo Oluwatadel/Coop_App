@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.Entities;
+using CoopApplication.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoopApplication.Persistence.Entity_Configuration
 {
@@ -17,12 +14,14 @@ namespace CoopApplication.Persistence.Entity_Configuration
 
             entity.HasKey(t => t.Id);
 
+            entity.Property(t => t.Id)
+                .HasColumnType("uuid")
+                .HasColumnName("id")
+                .IsRequired();
+
             entity.Property(t => t.UserId)
                 .IsRequired()
                 .HasColumnName("user_id");
-
-            entity.Property(t => t.LoanId)
-                .HasColumnName("loan_id");
 
             entity.Property(t => t.Amount)
                 .IsRequired()
@@ -31,22 +30,34 @@ namespace CoopApplication.Persistence.Entity_Configuration
 
             entity.Property(t => t.TransactionType)
                 .IsRequired()
-                .HasColumnName("transaction_type");
+                .HasColumnName("transaction_type")
+                .HasConversion(new EnumToStringConverter<TransactionType>());
 
             entity.Property(t => t.PaymentMethod)
                 .IsRequired()
-                .HasColumnName("payment_method");
-
-            entity.Property(t => t.AdminId)
-                .IsRequired()
-                .HasColumnName("admin_id");
+                .HasColumnName("payment_method")
+                .HasConversion(new EnumToStringConverter<PaymentMethod>());
 
             entity.Property(t => t.Date)
                 .IsRequired()
                 .HasColumnName("date");
 
+            entity.Property(l => l.CreatedAt)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired()
+                .HasColumnName("created_date");
+
+            entity.Property(l => l.ModifiedAt)
+                .HasColumnType("timestamp with time zone")
+                .IsRequired(false)
+                .HasColumnName("modified_date");
+
+            entity.Property(l => l.Modifier)
+                .HasColumnType("uuid")
+                .IsRequired(false)
+                .HasColumnName("modifier_id");
+
             entity.HasIndex(t => t.UserId);
-            entity.HasIndex(t => t.LoanId);
         }
     }
 }

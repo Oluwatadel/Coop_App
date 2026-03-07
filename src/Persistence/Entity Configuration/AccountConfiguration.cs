@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,7 +18,8 @@ namespace CoopApplication.Persistence.Entity_Configuration
 
             entity.Property(a => a.TotalShares)
                 .IsRequired()
-                .HasColumnName("total_shares");
+                .HasColumnName("total_shares")
+                .HasColumnType("decimal(18,2)");
 
             entity.Property(a => a.SavingsBalance)
                 .IsRequired()
@@ -35,11 +31,23 @@ namespace CoopApplication.Persistence.Entity_Configuration
                 .HasColumnName("total_interest_accrued")
                 .HasColumnType("decimal(18,2)");
 
-            entity.HasOne(a => a.User)
-                .WithOne(u => u.Account)
-                .HasForeignKey<Account>(a => a.UserId);
+            entity.Property(r => r.CreatedAt)
+                .HasColumnName("create_date")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired();
+
+            entity.Property(r => r.ModifiedAt)
+                .HasColumnName("modified_date")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired(false);
+
+            entity.Property(r => r.Modifier)
+                .HasColumnName("modified_by")
+                .HasColumnType("uuid")
+                .IsRequired(false);
 
             entity.HasIndex(a => a.UserId).IsUnique();
+            entity.HasIndex(a => a.TotalShares);
         }
     }
 }

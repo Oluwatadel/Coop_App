@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.Entities;
+using CoopApplication.Persistence.ValueConverters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,6 +12,11 @@ namespace CoopApplication.Persistence.Entity_Configuration
             entity.ToTable("loan_type");
 
             entity.HasKey(l => l.Id);
+
+            entity.Property(l => l.Id)
+                .IsRequired()
+                .HasColumnName("id")
+                .HasColumnType("uuid");
 
             entity.Property(l => l.Name)
                 .IsRequired()
@@ -31,16 +32,27 @@ namespace CoopApplication.Persistence.Entity_Configuration
                 .HasColumnName("annual_interest_rate")
                 .HasColumnType("decimal(5,2)");
 
-            entity.Property(l => l.LiquidityPeriod)
+            entity.Property(l => l.LiquidityPeriodInMonths)
                 .IsRequired()
                 .HasColumnName("liquidity_period");
 
-            entity.HasMany(l => l.Loans)
-                 .WithOne(lt => lt.LoanType)
-                 .HasForeignKey(lt => lt.LoanTypeId)
-                 .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(l => l.LoanVersion)
+                .IsRequired()
+                .HasColumnName("loan_version")
+                .HasColumnType("varchar(50)");
+            
+            entity.Property(l => l.Description)
+                .IsRequired()
+                .HasColumnName("loan_description")
+                .HasColumnType("text");
+
+            entity.Property(l => l.PreviousLoanVersion)
+                .HasColumnName("previous_loan_type")
+                .HasConversion(new JsonValueConverter<List<LoanType>>())
+                .HasColumnType("jsonb");
 
             entity.HasIndex(l => l.Name).IsUnique();
+            entity.HasIndex(l => l.Id).IsUnique();
         }
     }
 }

@@ -9,10 +9,13 @@ namespace CoopApplication.Domain.Entities
     public class Association : Auditable
     {
         public string Name { get; set; } = default!;
-        public ICollection<User> Users { get; set; } = new List<User>();
-        public Association(string name)
+
+        public string? Description { get; set; } = default!;
+
+        public Association(string name, string? description)
         {
             Name = name;
+            Description = description;
         }
     }
 }
