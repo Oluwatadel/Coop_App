@@ -42,5 +42,6 @@ namespace CoopApplication.Persistence.Repository.Implementations
             context.Roles.Update(role);
             return role;
         }
+
     }
 }
