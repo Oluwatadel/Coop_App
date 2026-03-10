@@ -1,4 +1,4 @@
-using CoopApplication.Domain.DTOs.RequestModels;
+using CoopApplication.Domain.DTOs.ResponseModels;
 using CoopApplication.Domain.Entities;
 using CoopApplication.Domain.Enums;
 using CoopApplication.Persistence.Context;
@@ -73,6 +73,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
             var data = await query
                 .Select(a => new TransactionFilterDto
                 {
+                    Id = a.tran.Id,
                     FullName = $"{a.user.LastName} {a.user.FirstName}",
                     AssociationName = a.assoc.Name,
                     Date = a.tran.Date,

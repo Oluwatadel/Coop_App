@@ -20,9 +20,17 @@ namespace CoopApplication.api.Middleware
                     {
                         System.ComponentModel.DataAnnotations.ValidationException => StatusCodes.Status400BadRequest,
                         AlreadyExistsException => StatusCodes.Status409Conflict,
+                        TransactionAlreadyExistException => StatusCodes.Status409Conflict,
                         //DuplicateRequisitionException => StatusCodes.Status409Conflict,
                         NotFoundException => StatusCodes.Status404NotFound,
-                        //UserValidationException => StatusCodes.Status400BadRequest,
+                        PrincipalAmountValidationException => StatusCodes.Status400BadRequest,
+                        MinimumLoanRepaymentException => StatusCodes.Status400BadRequest,
+                        LoanMinimumRepaymentException => StatusCodes.Status400BadRequest,
+                        InvalidLoanStatusException => StatusCodes.Status400BadRequest,
+                        LoanMaximumAndMinimumAmountException => StatusCodes.Status400BadRequest,
+                        MonthlyRepaymentAmountException => StatusCodes.Status400BadRequest,
+                        LoanLiquidityPeriodException => StatusCodes.Status400BadRequest,
+                        LoanVersionValidationException => StatusCodes.Status400BadRequest,
                         SaveOperationException => StatusCodes.Status500InternalServerError,
                         //UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                         _ => StatusCodes.Status500InternalServerError
