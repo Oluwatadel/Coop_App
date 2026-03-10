@@ -10,5 +10,6 @@ namespace CoopApplication.Persistence.Repository.Interfaces
         Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken);
         Association UpdateAsscociation(Association association);
         Task<bool> AsscociationExist(Guid associationId, CancellationToken cancellationToken);
+        Task<bool> AsscociationExistWithName(string name, CancellationToken cancellationToken);
     }
 }

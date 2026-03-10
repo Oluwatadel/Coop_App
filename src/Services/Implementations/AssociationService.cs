@@ -2,6 +2,7 @@
 using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
+using System.Data;
 
 namespace CoopApplication.Services.Implementations
 {
@@ -10,6 +11,11 @@ namespace CoopApplication.Services.Implementations
         public async Task<Association?> CreateAssociationAsync(string name, string description, CancellationToken cancellationToken)
         {
             var association = new Association(name, description);
+            var exist = await associationRepository.AsscociationExistWithName(name, cancellationToken);
+            if(exist)
+            {
+                throw new AlreadyExistsException($"Association exist with name {name}");
+            }
             var createdAssociation = await associationRepository.AddAssociationAsync(association, cancellationToken);
             var changes = await unitofWork.SaveChanges(cancellationToken);
             if (changes <= 0)

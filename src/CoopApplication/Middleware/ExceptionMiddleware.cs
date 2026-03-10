@@ -19,7 +19,7 @@ namespace CoopApplication.api.Middleware
                     context.Response.StatusCode = ex switch
                     {
                         System.ComponentModel.DataAnnotations.ValidationException => StatusCodes.Status400BadRequest,
-                        AlreadyExistException => StatusCodes.Status409Conflict,
+                        AlreadyExistsException => StatusCodes.Status409Conflict,
                         //DuplicateRequisitionException => StatusCodes.Status409Conflict,
                         NotFoundException => StatusCodes.Status404NotFound,
                         //UserValidationException => StatusCodes.Status400BadRequest,

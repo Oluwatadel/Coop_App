@@ -24,6 +24,13 @@ namespace CoopApplication.Persistence.Repository.Implementations
             var any = await exist.AnyAsync(a => a.Id == associationId, cancellationToken);
             return any;
         }
+        
+        public async Task<bool> AsscociationExistWithName(string name, CancellationToken cancellationToken)
+        {
+            var exist = context.Associations.AsQueryable();
+            var any = await exist.AnyAsync(a => a.Name == name, cancellationToken);
+            return any;
+        }
 
         public async Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken)
         {
