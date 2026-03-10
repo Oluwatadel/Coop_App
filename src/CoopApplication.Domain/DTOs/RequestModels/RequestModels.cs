@@ -10,14 +10,11 @@ namespace CoopApplication.Domain.DTOs.RequestModels
     public record SearchUser(string SearchTerm, bool IsActive = true);
     public record CreateAssociationRequest(string AssociationName, string Description);
 
-    public record TransactionFilterDto
-    {
-        public string? FullName { get; init; }
-        public string? AssociationName { get; init; }
-        public DateTime? Date { get; init; }
-        public decimal? Amount { get; init; }
-        public TransactionType? TransactionType { get; init; }
-        public PaymentMethod? PaymentMethod { get; init; }
-    }
+
+    public record CreateLoanTypeRequest(string Name, string Description, decimal MinimumLoanRepayment,
+        decimal AnnualInterestRate, int LiquidityPeriodInMonths);
+
+    public record UpdateLoanTypeRequest(string Name, string? Description, decimal? MinimumLoanRepayment,
+        decimal? AnnualInterestRate, int? LiquidityPeriodInMonths);
 
 }

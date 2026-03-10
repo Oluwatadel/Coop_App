@@ -97,7 +97,5 @@ namespace CoopApplication.Domain.Entities
             StartDate = startDate;
         }
 
-
-
     }
 }
