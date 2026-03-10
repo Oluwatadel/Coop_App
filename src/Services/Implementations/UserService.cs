@@ -8,7 +8,7 @@ using Mapster;
 
 namespace CoopApplication.Services.Implementations
 {
-    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork) : IUserService
+    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork, IRoleRepository roleRepository) : IUserService
     {
         public async Task<UserResponse> CreateUserAsync(UserRequest userRequest, CancellationToken cancellationToken)
         {
@@ -93,6 +93,28 @@ namespace CoopApplication.Services.Implementations
         public async Task<bool> UserExistAsync(LoginRequest request, CancellationToken cancellationToken)
         {
             return await userRepository.ExistAsync(request.Email, request.PhoneNumber, cancellationToken);
+        }
+
+        public async Task<UserResponse> AssignRoleAsync(Guid roleId, Guid userId, CancellationToken cancellationToken)
+        {
+            var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
+            if (user is null)
+            {
+                throw new NotFoundException("User with the provided id does not exist.");
+            }
+            var role = await roleRepository.GetRoleByIdAsync(roleId, cancellationToken);
+            if (role is null)
+            {
+                throw new NotFoundException($"Role with id: {roleId} cannot be found");
+            }
+            user.UpdateRole(roleId);
+            var assignedRole = userRepository.UpdateUser(user);
+            var changes = await unitofWork.SaveChanges(cancellationToken);
+            if (changes <= 0)
+            {
+                throw new SaveOperationException("Failed to assign the role to the user. Please try again.");
+            }
+            return assignedRole;
         }
     }
 }

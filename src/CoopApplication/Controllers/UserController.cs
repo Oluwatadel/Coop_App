@@ -57,5 +57,12 @@ namespace CoopApplication.api.Controllers
             var loginResponse = await userService.UserExistAsync(request, cancellationToken);
             return Ok(loginResponse);
         }
+
+        [HttpPut("assign-role")]
+        public async Task<IActionResult> AssignRoleToUser([FromQuery] Guid userId, [FromQuery] Guid roleId, CancellationToken cancellationToken)
+        {
+            var response = await userService.AssignRoleToUserAsync(userId, roleId, cancellationToken);
+            return Ok(response);
+        }
     }
 }

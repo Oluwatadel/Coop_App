@@ -7,8 +7,8 @@ namespace CoopApplication.Persistence.Repository.Interfaces
         Task<Association> AddAssociationAsync(Association association, CancellationToken cancellationToken);
         Task<Association> GetAssociationByIdAsync(Guid associationId, CancellationToken cancellationToken);
         Task<Association> GetAssociationByNameAsync(string associationName, CancellationToken cancellationToken);
-        Task<Association> GetAllAssociations(CancellationToken cancellationToken);
-        Task<Association> UpdateAsscociation(Association association, CancellationToken cancellationToken);
-        Task<Association> AsscociationExist(Association association, CancellationToken cancellationToken);
+        Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken);
+        Association UpdateAsscociation(Association association);
+        Task<bool> AsscociationExist(Guid associationId, CancellationToken cancellationToken);
     }
 }

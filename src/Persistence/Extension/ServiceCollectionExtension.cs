@@ -28,8 +28,15 @@ namespace CoopApplication.Persistence.Extension
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
-            //Add Repository 
+            //Add Repository
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IAssociationRepository, AssociationRepository>();
+            services.AddScoped<ILoanTakenRepository, LoanTakenRepository>();
+            services.AddScoped<ILoanRepaymentRepository, LoanRepaymentRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ILoanTypeRepository, LoanTypeRepository>();
             services.AddScoped<IUnitofWork, UnitOfWork>();
             return services;
         }

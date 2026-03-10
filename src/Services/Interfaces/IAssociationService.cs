@@ -9,10 +9,10 @@ namespace CoopApplication.Services.Interfaces
 {
     public interface IAssociationService
     {
-        Task<Association> CreateAssociationAsync(string name, string? description);
-        Task<Association> UpdateAssociationAsync(string name);
-        Task<Association> GetAssociationByNameAsync(string name);
-        Task<Association> GetAssociationByIdAsync(Guid id);
-        Task<IReadOnlyList<Association>> GetAllAssociation(Guid id);
+        Task<Association> CreateAssociationAsync(string name, string? description, CancellationToken cancellationToken);
+        Task<Association> UpdateAssociationAsync(Guid associationId, string name, CancellationToken cancellationToken);
+        Task<Association> GetAssociationByNameAsync(string name, CancellationToken cancellationToken);
+        Task<Association> GetAssociationByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<IReadOnlyList<Association>> GetAllAssociation(CancellationToken cancellationToken);
     }
 }

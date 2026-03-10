@@ -62,6 +62,7 @@ namespace CoopApplication.Domain.Entities
             updateEmail(request.Email);
             updatePhonenumber(request.PhoneNumber);
         }
+
          public void DeactivateUser()
         {
             IsActive = false;

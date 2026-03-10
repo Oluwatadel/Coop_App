@@ -1,6 +1,7 @@
 ﻿using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,29 +18,39 @@ namespace CoopApplication.Persistence.Repository.Implementations
             return association;
         }
 
-        public Task<Association> AsscociationExist(Association association, CancellationToken cancellationToken)
+        public async Task<bool> AsscociationExist(Guid associationId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var exist = context.Associations.AsQueryable();
+            var any = await exist.AnyAsync(a => a.Id == associationId, cancellationToken);
+            return any;
         }
 
-        public Task<Association> GetAllAssociations(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var data = await context.Associations.ToListAsync(cancellationToken);
+            return data;
         }
 
-        public Task<Association> GetAssociationByIdAsync(Guid associationId, CancellationToken cancellationToken)
+        public async Task<Association> GetAssociationByIdAsync(Guid associationId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var data = await context.Associations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == associationId, cancellationToken);
+            return data;
         }
 
         public Task<Association> GetAssociationByNameAsync(string associationName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var data = context.Associations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Name == associationName, cancellationToken);
+            return data;
         }
 
-        public Task<Association> UpdateAsscociation(Association association, CancellationToken cancellationToken)
+        public Association UpdateAsscociation(Association association)
         {
-            throw new NotImplementedException();
+            context.Associations.Update(association);
+            return association;
         }
     }
 }
