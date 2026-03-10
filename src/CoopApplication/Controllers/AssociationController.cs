@@ -30,7 +30,8 @@ namespace CoopApplication.api.Controllers
             return Ok(association);
         }
 
-        [HttpPatch("update")]
+        [HttpPatch]
+        [Route("{id:guid}/update")]
         public async Task<IActionResult> UpdateAssociation([FromRoute] Guid id, [FromBody] string name, CancellationToken cancellationToken)
         {
             var updatedAssociation = await associationService.UpdateAssociationAsync(id, name, cancellationToken);
@@ -41,7 +42,7 @@ namespace CoopApplication.api.Controllers
         public async Task<IActionResult> CreateAssociation([FromBody] CreateAssociationRequest request, CancellationToken cancellationToken)
         {
             var createdAssociation = await associationService.CreateAssociationAsync(request.AssociationName, request.Description, cancellationToken);
-            return CreatedAtAction(nameof(GetAssociationById), createdAssociation);
+            return Created(nameof(GetAssociationById), createdAssociation);
         }
     }
 }

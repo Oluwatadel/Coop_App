@@ -33,7 +33,7 @@ namespace CoopApplication.api.Controllers
         public async Task<IActionResult> CreateUser([FromBody] UserRequest request, CancellationToken cancellationToken)
         {
             var createdUser = await userService.CreateUserAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(GetUserById), createdUser);
+            return Created(nameof(GetUserById), createdUser);
         }
 
         [HttpPut("{userId:guid}/update")]
