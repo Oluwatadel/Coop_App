@@ -13,9 +13,15 @@ public static class NpgsqlConnectionExtension
             Database = configuration.GetValue<string>("DB_NAME"),
             Password = configuration.GetValue<string>("DB_PASSWORD"),
             Username = configuration.GetValue<string>("DB_USERNAME"),
+            Port = configuration.GetValue<int?>("DB_PORT") ?? 5432,
+
             IncludeErrorDetail = true,
             Pooling = true,
-            Port = configuration.GetValue<int?>("DB_PORT") ?? 5432
+
+            // REQUIRED for Render PostgreSQL
+            SslMode = SslMode.Require,
+            TrustServerCertificate = true
+
         };
     }
 }
