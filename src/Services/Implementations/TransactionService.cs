@@ -113,7 +113,6 @@ namespace CoopApplication.Services.Implementations
 
                 var repayment = new LoanRepayment
                 {
-                    Id = Guid.NewGuid(),
                     LoanId = loan.Id,
                     Amount = paymentAmount,
                     Date = DateTime.UtcNow
@@ -158,6 +157,7 @@ namespace CoopApplication.Services.Implementations
 
             return new TransactionResponse
             {
+                ReferenceNo = transactions.TransactionReferenceNo,
                 Id = transactions.Id,
                 UserId = transactions.UserId,
                 Amount = transactions.Amount,
