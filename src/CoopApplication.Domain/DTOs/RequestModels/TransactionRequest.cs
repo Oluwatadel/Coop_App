@@ -8,6 +8,8 @@ namespace CoopApplication.Domain.DTOs.RequestModels
         [Required]
         public Guid UserId { get; set; }
 
+        public string TransactionReferenceNo { get; set; } = default!;
+
         [Range(1, double.MaxValue, ErrorMessage = "Amount must be greater than zero")]
         public decimal Amount { get; set; }
 

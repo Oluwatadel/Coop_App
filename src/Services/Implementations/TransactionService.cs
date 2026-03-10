@@ -5,6 +5,7 @@ using CoopApplication.Persistence.Repository.Implementations;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
 using CoopApplication.Domain.Entities;
+using CoopApplication.api.Exceptions;
 
 
 namespace CoopApplication.Services.Implementations
@@ -34,6 +35,7 @@ namespace CoopApplication.Services.Implementations
 
             return transactions.Select(t => new TransactionResponse
             {
+                ReferenceNo = t.TransactionReferenceNo,
                 Id = t.Id,
                 UserId = t.UserId,
                 Amount = t.Amount,
@@ -45,17 +47,18 @@ namespace CoopApplication.Services.Implementations
 
         public async Task<TransactionResponse?> GetTransactionByIdAsync(Guid transactionId, CancellationToken cancellationToken)
         {
-           var transactions = await _transactionRepository.GetTransactionByIdAsync(transactionId, cancellationToken);
-            if (transactions == null)
-                return null;
+           var transaction = await _transactionRepository.GetTransactionByIdAsync(transactionId, cancellationToken);
+            if (transaction == null)
+                throw new NotFoundException("Transaction not found");
             return new TransactionResponse
             {
-                Id = transactions.Id,
-                UserId = transactions.UserId,
-                Amount = transactions.Amount,
-                PaymentMethod = transactions.PaymentMethod,
-                TransactionType = transactions.TransactionType,
-                Date = transactions.Date
+                ReferenceNo = transaction.TransactionReferenceNo,
+                Id = transaction.Id,
+                UserId = transaction.UserId,
+                Amount = transaction.Amount,
+                PaymentMethod = transaction.PaymentMethod,
+                TransactionType =  transaction.TransactionType,
+                Date = transaction.Date
             };
         }
 
@@ -63,19 +66,22 @@ namespace CoopApplication.Services.Implementations
         {
             var transactions = await _transactionRepository.GetTransactionsByUserIdAsync(userId, cancellationToken);
             return transactions.Select(t => new TransactionResponse
-            { Id = t.Id,
-            UserId = t.UserId,
-            Amount = t.Amount,
-            PaymentMethod = t.PaymentMethod,
-            TransactionType = t.TransactionType,
-            Date = t.Date}).ToList();
+            {
+                ReferenceNo = t.TransactionReferenceNo,
+                Id = t.Id,
+                UserId = t.UserId,
+                Amount = t.Amount,
+                PaymentMethod = t.PaymentMethod,
+                TransactionType = t.TransactionType,
+                Date = t.Date
+            }).ToList();
         }
 
         public async Task<TransactionResponse> ProcessTransactionAsync(
             TransactionRequestDto request, CancellationToken cancellationToken)
         {
             if (request.Amount <= 0)
-                throw new ArgumentException("Transaction amount must be greater than 0");
+                throw new TransactionAmountException("Transaction amount must be greater than 0");
 
             decimal remainingAmount = request.Amount;
 

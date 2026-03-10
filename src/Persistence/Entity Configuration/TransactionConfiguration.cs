@@ -19,6 +19,11 @@ namespace CoopApplication.Persistence.Entity_Configuration
                 .HasColumnName("id")
                 .IsRequired();
 
+            entity.Property(t => t.TransactionReferenceNo)
+                .HasColumnName("transaction_reference_no")
+                .HasColumnType("varchar(20)")
+                .IsRequired();
+
             entity.Property(t => t.UserId)
                 .IsRequired()
                 .HasColumnName("user_id");

@@ -4,6 +4,7 @@ namespace CoopApplication.Domain.Entities
 {
     public class Transaction : Auditable
     {
+        public string TransactionReferenceNo { get; set; } = default!;
         public Guid UserId { get; set; }
         public decimal Amount { get; set; }
         public TransactionType TransactionType { get; set; }

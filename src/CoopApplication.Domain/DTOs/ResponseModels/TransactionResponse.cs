@@ -9,6 +9,7 @@ namespace CoopApplication.Domain.DTOs.ResponseModels
 {
     public record TransactionResponse
     {
+        public string ReferenceNo { get; set; } 
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public decimal Amount { get; set; }
