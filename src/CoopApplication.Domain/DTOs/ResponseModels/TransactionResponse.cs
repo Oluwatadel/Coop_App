@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace CoopApplication.Domain.DTOs.ResponseModels
 {
-    public record LoanTypeResponse(string Name, string Description, decimal MinimumLoanRepayment,
+    public record LoanTypeResponse(Guid Id, string Name, string Description, decimal MinimumLoanRepayment,
         decimal AnnualInterestRate, int LiquidityPeriodInMonths, int LoanVersion);
 }

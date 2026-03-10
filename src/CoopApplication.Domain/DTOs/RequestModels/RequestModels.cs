@@ -1,4 +1,5 @@
 ﻿using CoopApplication.Domain.Enums;
+using System;
 
 namespace CoopApplication.Domain.DTOs.RequestModels
 {
@@ -12,9 +13,12 @@ namespace CoopApplication.Domain.DTOs.RequestModels
 
 
     public record CreateLoanTypeRequest(string Name, string Description, decimal MinimumLoanRepayment,
-        decimal AnnualInterestRate, int LiquidityPeriodInMonths);
+        decimal AnnualInterestRate, int LiquidityPeriodInMonths,
+        decimal MaximunLoanAmount, decimal minimumLoanAmount);
 
-    public record UpdateLoanTypeRequest(string Name, string? Description, decimal? MinimumLoanRepayment,
-        decimal? AnnualInterestRate, int? LiquidityPeriodInMonths);
+    public record UpdateLoanTypeRequest(string Name, string? Description, 
+        decimal? MinimumLoanRepayment,
+        decimal? AnnualInterestRate, int? LiquidityPeriodInMonths,
+        decimal? MaximunLoanAmount, decimal? MinimumLoanAmount);
 
 }

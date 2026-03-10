@@ -42,14 +42,15 @@ namespace CoopApplication.Domain.Entities
         {
             var amountPayable = totalRepaymentAmount / months;
             var minimunRepaymentForCurrentLoan = LoanType.MinimumLoanRepayment;
-            if(amountPayable < minimunRepaymentForCurrentLoan)
-            {
-                MonthlyPaymentAmount = LoanType.MinimumLoanRepayment;
-            }
-            else
-            {
-                MonthlyPaymentAmount = amountPayable;
-            }
+                //if(amountPayable < minimunRepaymentForCurrentLoan)
+                //{
+                //    MonthlyPaymentAmount = LoanType.MinimumLoanRepayment;
+                //}
+                //else
+                //{
+                //    MonthlyPaymentAmount = amountPayable;
+                //}
+            MonthlyPaymentAmount = amountPayable;
         }
 
         private void AddPrincipalAmount(decimal amount)

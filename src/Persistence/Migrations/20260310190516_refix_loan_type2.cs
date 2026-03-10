@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CoopApplication.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class new2 : Migration
+    public partial class refix_loan_type2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,11 +76,13 @@ namespace CoopApplication.Persistence.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "varchar(100)", nullable: false),
                     loan_description = table.Column<string>(type: "text", nullable: false),
-                    minimum_loan_repayment = table.Column<int>(type: "integer", nullable: false),
+                    max_loan_amount = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
+                    min_loan_amount = table.Column<decimal>(type: "numeric(18,5)", nullable: false),
+                    minimum_loan_repayment = table.Column<decimal>(type: "numeric", nullable: false),
                     annual_interest_rate = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
                     liquidity_period = table.Column<int>(type: "integer", nullable: false),
                     loan_version = table.Column<string>(type: "varchar(50)", nullable: false),
-                    previous_loan_type = table.Column<string>(type: "jsonb", nullable: false),
+                    previous_loan_type = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Modifier = table.Column<Guid>(type: "uuid", nullable: true)

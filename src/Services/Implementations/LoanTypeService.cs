@@ -16,8 +16,11 @@ namespace CoopApplication.Services.Implementations
             {
                 throw new AlreadyExistsException($"Loan with name: {loanTypeRequest.Name} already exist");
             }
-            var newLoanType = new LoanType(loanTypeRequest.Name, loanType.Description, loanTypeRequest.MinimumLoanRepayment,
-                loanTypeRequest.AnnualInterestRate, loanTypeRequest.LiquidityPeriodInMonths);
+            var newLoanType = new LoanType(
+                loanTypeRequest.Name, loanTypeRequest.Description,
+                loanTypeRequest.MaximunLoanAmount, loanTypeRequest.minimumLoanAmount,
+                loanTypeRequest.MinimumLoanRepayment, loanTypeRequest.AnnualInterestRate,
+                loanTypeRequest.LiquidityPeriodInMonths);
             var returnedLoanType = await loanTypeRepository.CreateLoanTypeAsync(newLoanType, cancellationToken);
             var changes = await unitofWork.SaveChanges(cancellationToken);
             if(changes <= 0)
@@ -25,6 +28,7 @@ namespace CoopApplication.Services.Implementations
                 throw new SaveOperationException($"Error saving loanType");
             }
             return new LoanTypeResponse(
+                returnedLoanType.Id,
                 returnedLoanType.Name,
                 returnedLoanType.Description,
                 returnedLoanType.MinimumLoanRepayment,
@@ -38,6 +42,7 @@ namespace CoopApplication.Services.Implementations
         {
             var returnedLoanTypes = await loanTypeRepository.GetAllLoanTypesAsync(cancellationToken);
             return [..returnedLoanTypes.Select(a => new LoanTypeResponse(
+                a.Id,
                 a.Name,
                 a.Description,
                 a.MinimumLoanRepayment,
@@ -54,6 +59,7 @@ namespace CoopApplication.Services.Implementations
                 throw new NotFoundException($"Loan type with Id: {loanTypeId} is not found!!!");
             }
             return new LoanTypeResponse(
+                loanType.Id,
                 loanType.Name,
                 loanType.Description,
                 loanType.MinimumLoanRepayment,
@@ -70,6 +76,7 @@ namespace CoopApplication.Services.Implementations
                 throw new NotFoundException($"Loan type with name: {loanName} is not found!!!");
             }
             return new LoanTypeResponse(
+                loanType.Id,
                 loanType.Name,
                 loanType.Description,
                 loanType.MinimumLoanRepayment,
@@ -87,10 +94,11 @@ namespace CoopApplication.Services.Implementations
             }
             var newLoan = loanType.CreateNewVersionOfLoanType(
                 loanTypeRequest.Description,
-                loanType.LoanVersion,
+                loanType,
                 loanTypeRequest.Name,
-                loanTypeRequest.MinimumLoanRepayment.Value, loanTypeRequest.AnnualInterestRate,
-                loanTypeRequest.LiquidityPeriodInMonths);
+                loanTypeRequest.MinimumLoanRepayment, loanTypeRequest.AnnualInterestRate,
+                loanTypeRequest.LiquidityPeriodInMonths,
+                loanTypeRequest.MaximunLoanAmount, loanTypeRequest.MinimumLoanAmount);
             newLoan.AddOldVersionofLoanType(loanType);
             loanTypeRepository.UpdateLoanType(newLoan);
             var changes = await unitofWork.SaveChanges(cancellationToken);
@@ -99,6 +107,7 @@ namespace CoopApplication.Services.Implementations
                 throw new SaveOperationException("Problem saving loan type");
             }
             return new LoanTypeResponse(
+                newLoan.Id,
                 newLoan.Name,
                 newLoan.Description,
                 newLoan.MinimumLoanRepayment,

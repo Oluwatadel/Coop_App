@@ -42,16 +42,26 @@ namespace CoopApplication.Persistence.Entity_Configuration
                 .HasColumnType("varchar(50)");
             
             entity.Property(l => l.Description)
-                .IsRequired()
+                .IsRequired(false)
                 .HasColumnName("loan_description")
                 .HasColumnType("text");
 
-            entity.Property(l => l.PreviousLoanVersion)
+            entity.Property(l => l.PreviousLoanVersionId)
                 .HasColumnName("previous_loan_type")
-                .HasConversion(new JsonValueConverter<List<LoanType>>())
-                .HasColumnType("jsonb");
+                .HasColumnType("uuid")
+                .IsRequired(false);
 
-            entity.HasIndex(l => l.Name).IsUnique();
+            entity.Property(l => l.MinimumLoanAmount)
+                .HasColumnName("min_loan_amount")
+                .HasColumnType("decimal(18,5)")
+                .IsRequired();
+            
+            entity.Property(l => l.MaximumLoanAmount)
+                .HasColumnName("max_loan_amount")
+                .HasColumnType("decimal(18,5)")
+                .IsRequired();
+
+            entity.HasIndex(l => l.Name);
             entity.HasIndex(l => l.Id).IsUnique();
         }
     }

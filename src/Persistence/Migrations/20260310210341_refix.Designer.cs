@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoopApplication.Persistence.Migrations
 {
     [DbContext(typeof(CoopDbContext))]
-    [Migration("20260310114634_new2")]
-    partial class new2
+    [Migration("20260310210341_refix")]
+    partial class refix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -250,7 +250,6 @@ namespace CoopApplication.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("loan_description");
 
@@ -263,8 +262,16 @@ namespace CoopApplication.Persistence.Migrations
                         .HasColumnType("varchar(50)")
                         .HasColumnName("loan_version");
 
-                    b.Property<int>("MinimumLoanRepayment")
-                        .HasColumnType("integer")
+                    b.Property<decimal>("MaximumLoanAmount")
+                        .HasColumnType("decimal(18,5)")
+                        .HasColumnName("max_loan_amount");
+
+                    b.Property<decimal>("MinimumLoanAmount")
+                        .HasColumnType("decimal(18,5)")
+                        .HasColumnName("min_loan_amount");
+
+                    b.Property<decimal>("MinimumLoanRepayment")
+                        .HasColumnType("numeric")
                         .HasColumnName("minimum_loan_repayment");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -278,9 +285,8 @@ namespace CoopApplication.Persistence.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<string>("PreviousLoanVersion")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
+                    b.Property<Guid?>("PreviousLoanVersionId")
+                        .HasColumnType("uuid")
                         .HasColumnName("previous_loan_type");
 
                     b.HasKey("Id");
@@ -288,8 +294,7 @@ namespace CoopApplication.Persistence.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("Name");
 
                     b.ToTable("loan_type", (string)null);
                 });
