@@ -1,3 +1,4 @@
+using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.Entities;
 using CoopApplication.Domain.Enums;
 using CoopApplication.Persistence.Repository.Implementations;
@@ -14,6 +15,6 @@ namespace CoopApplication.Persistence.Repository.Interfaces
         Task<IReadOnlyList<TransactionFilterDto>> FilterTransactionsAsync(Guid? UserId, DateTime? date,
             decimal? Amount,
             TransactionType? transactionType,
-            PaymentMethod? paymentMethod, CancellationToken cancellationToken)
+            PaymentMethod? paymentMethod, CancellationToken cancellationToken);
     }
 }
