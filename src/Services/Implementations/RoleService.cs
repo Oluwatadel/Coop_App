@@ -24,7 +24,7 @@ namespace CoopApplication.Services.Implementations
             var newRole = new Role(request.Name);
             var exist = await _roleRepository.ExistAsync(request.Name, cancellationToken);
             if (exist)
-                throw new AlreadyExistException($"A role with {request.Name} already exist");
+                throw new AlreadyExistsException($"A role with {request.Name} already exist");
             var createdRole = await _roleRepository.CreateRoleAsync(newRole, cancellationToken);
             var changes = await _unitOfWork.SaveChanges(cancellationToken);
             if(changes == 0)
