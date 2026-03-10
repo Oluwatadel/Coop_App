@@ -19,6 +19,7 @@ namespace CoopApplication.Services.Extension
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IAssociationService, AssociationService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITransactionService, TransactionService>();
             return services;
         }
     }
