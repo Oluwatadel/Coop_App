@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Repository\Interfaces\IAccount.Repository.cs" />
+    <None Include="Repository\Interfaces\IAccountRepository.cs" />
   </ItemGroup>
 
   <ItemGroup>
