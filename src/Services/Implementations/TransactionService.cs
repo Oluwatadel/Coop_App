@@ -1,6 +1,7 @@
 ﻿using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.DTOs.ResponseModels;
 using CoopApplication.Domain.Enums;
+using CoopApplication.api.Exceptions;
 using CoopApplication.Persistence.Repository.Implementations;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
