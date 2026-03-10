@@ -4,7 +4,6 @@ using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using CoopApplication.api.Exceptions;
 using System.Data;
 
 namespace CoopApplication.Persistence.Repository.Implementations
