@@ -1,3 +1,4 @@
+using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.Entities;
 using CoopApplication.Domain.Enums;
 using CoopApplication.Persistence.Context;

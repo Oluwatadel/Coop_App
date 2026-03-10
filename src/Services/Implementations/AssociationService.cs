@@ -7,7 +7,7 @@ namespace CoopApplication.Services.Implementations
 {
     public class AssociationService(IUnitofWork unitofWork, IAssociationRepository associationRepository) : IAssociationService
     {
-        public async Task<Association> CreateAssociationAsync(string name, string description, CancellationToken cancellationToken)
+        public async Task<Association?> CreateAssociationAsync(string name, string description, CancellationToken cancellationToken)
         {
             var association = new Association(name, description);
             var createdAssociation = await associationRepository.AddAssociationAsync(association, cancellationToken);

@@ -4,6 +4,7 @@ using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using CoopApplication.api.Exceptions;
 using System.Data;
 
 namespace CoopApplication.Persistence.Repository.Implementations
@@ -95,10 +96,6 @@ namespace CoopApplication.Persistence.Repository.Implementations
         {
             context.Users.Update(user);
             var changes = context.SaveChanges();
-            if(changes == 0)
-            {
-                throw new SaveOperationException("Failed to update user");
-            }
             var association = context.Associations.FirstOrDefault(a => a.Id == user.AssociationId);
             var role = context.Roles.FirstOrDefault(r => r.Id == user.RoleId);
             return new UserResponse

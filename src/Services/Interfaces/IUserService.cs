@@ -14,5 +14,6 @@ namespace CoopApplication.Services.Interfaces
         Task<IReadOnlyList<UserResponse?>> GetAllUsersAsync(CancellationToken cancellationToken);
         Task<IReadOnlyList<UserResponse>> GetMembersOfAnAssociation(Guid associationId, CancellationToken cancellationToken);
         Task<bool> UserExistAsync(LoginRequest request, CancellationToken cancellationToken);
+        Task<UserResponse> AssignRoleAsync(Guid roleId, Guid userId, CancellationToken cancellationToken);
     }
 }
