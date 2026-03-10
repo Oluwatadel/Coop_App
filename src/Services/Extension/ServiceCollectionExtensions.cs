@@ -1,5 +1,6 @@
 ﻿using CoopApplication.Services.Implementations;
 using CoopApplication.Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace CoopApplication.Services.Extension
             //Add Services
 
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IAssociationService, AssociationService>();
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }
