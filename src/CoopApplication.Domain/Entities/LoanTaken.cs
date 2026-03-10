@@ -30,12 +30,12 @@ namespace CoopApplication.Domain.Entities
         }
         private void CalculateRepaymentAndAmount()
         {
-            var liquidityPeriod = LoanType.LiquidityPeriodInMonths / 12;
-            var years = Math.Ceiling((decimal)liquidityPeriod);
+            var liquidityPeriod = LoanType.LiquidityPeriodInMonths;
+            var years = liquidityPeriod / 12m;
             var interestRate = years * LoanType.AnnualInterestRate;
             var interest = PrincipalAmount * interestRate;
             TotalRepaymentAmount = PrincipalAmount + interest;
-            BalanceRemaining += TotalRepaymentAmount;
+            BalanceRemaining = TotalRepaymentAmount;
             CalculateMonthlyRepaymentAmount(liquidityPeriod, TotalRepaymentAmount);
         }
         private void CalculateMonthlyRepaymentAmount(int months, decimal totalRepaymentAmount)
@@ -77,7 +77,7 @@ namespace CoopApplication.Domain.Entities
             LoanRepayments.Add(loanRepayment);
             if(BalanceRemaining <= 0)
             {
-                Status = LoanStatus.Ongoing;
+                Status = LoanStatus.PaidOff;
             }
         }
 
@@ -96,6 +96,8 @@ namespace CoopApplication.Domain.Entities
         {
             StartDate = startDate;
         }
+
+
 
     }
 }
