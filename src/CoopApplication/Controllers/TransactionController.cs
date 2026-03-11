@@ -19,7 +19,7 @@ namespace CoopApplication.Api.Controllers
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTransactionById(Guid id, CancellationToken cancellationToken)
-        {
+        {   
             var transaction = await transactionService
                 .GetTransactionByIdAsync(id, cancellationToken);
 
