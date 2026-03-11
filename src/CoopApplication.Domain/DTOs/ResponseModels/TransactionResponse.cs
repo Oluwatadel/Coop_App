@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoopApplication.Domain.Enums;
+﻿using CoopApplication.Domain.Enums;
 
 namespace CoopApplication.Domain.DTOs.ResponseModels
 {
@@ -17,9 +12,4 @@ namespace CoopApplication.Domain.DTOs.ResponseModels
         public PaymentMethod PaymentMethod { get; set; }
         public DateTime Date { get; set; }
     }
-
-namespace CoopApplication.Domain.DTOs.ResponseModels
-{
-    public record LoanTypeResponse(Guid Id, string Name, string Description, decimal MinimumLoanRepayment,
-        decimal AnnualInterestRate, int LiquidityPeriodInMonths, int LoanVersion);
 }

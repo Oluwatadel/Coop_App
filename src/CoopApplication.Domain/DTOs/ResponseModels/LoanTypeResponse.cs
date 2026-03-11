@@ -12,4 +12,7 @@ namespace CoopApplication.Domain.DTOs.ResponseModels
         public TransactionType? TransactionType { get; init; }
         public PaymentMethod? PaymentMethod { get; init; }
     }
+
+    public record LoanTypeResponse(Guid Id, string Name, string Description, decimal MinimumLoanRepayment,
+        decimal AnnualInterestRate, int LiquidityPeriodInMonths, int LoanVersion);
 }

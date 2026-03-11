@@ -11,26 +11,10 @@ namespace CoopApplication.Persistence.Repository.Implementations
 {
     public class UserRepository(CoopDbContext context) : IUserRepository
     {
-        public async Task<UserResponse> CreateUserAsync(User user, CancellationToken cancellationToken)
+        public async Task<User> CreateUserAsync(User user, CancellationToken cancellationToken)
         {
             await context.Users.AddAsync(user, cancellationToken);
-            var query = from u in context.Users
-                        join association in context.Associations
-                        on user.AssociationId equals association.Id
-                        join role in context.Roles
-                        on user.RoleId equals role.Id
-                        select new { role, association };
-            var result = await query.FirstOrDefaultAsync(u => u.association.Id == user.AssociationId && u.role.Id == user.RoleId, cancellationToken);
-            return new UserResponse
-            {
-                UserId = user.Id,
-                AssociationName = result!.association.Name,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Phone = user.Phone,
-                Role = result.role.Name
-            };
+            return user;
         }
 
         public async Task<bool> ExistAsync(string email, string? phoneNumber, CancellationToken cancellationToken)
@@ -255,13 +239,27 @@ namespace CoopApplication.Persistence.Repository.Implementations
                           select new { user, loan, account};
 
             var totalMembers = await members.CountAsync(cancellationToken);
-            var TotalAmountSavedByMembers = await members.SumAsync(a => a.account.SavingsBalance, cancellationToken);
-            var totalMembersShares = members.SumAsync(_ => _.account.TotalShares, cancellationToken);
-            var totalLoanIssued = members.SumAsync(a => a.loan.PrincipalAmount, cancellationToken);
-            var totalLoanRepaymentYetToBePaid = members.SumAsync(a => a.loan.BalanceRemaining, cancellationToken);
-            var totalRepayments = members.SumAsync(a => a.loan.TotalRepaymentAmount - a.loan.BalanceRemaining, cancellationToken);
-            var defaulters = m
+            var totalAmountSavedByMembers = await members.SumAsync(a => a.account.SavingsBalance, cancellationToken);
+            var totalMembersShares = await members.SumAsync(_ => _.account.TotalShares, cancellationToken);
+            var totalLoanIssued = await members.SumAsync(a => a.loan.PrincipalAmount, cancellationToken);
+            var totalLoanRepaymentYetToBePaid = await members.SumAsync(a => a.loan.BalanceRemaining, cancellationToken);
+            var totalRepayments = await members.SumAsync(a => a.loan.TotalRepaymentAmount - a.loan.BalanceRemaining, cancellationToken);
+
+            return new AdminDashBoardOverviewDto
+            {
+                AdminId = userResponse.UserId,
+                FullName = $"{userResponse.LastName} {userResponse.FirstName}",
+                AssociationId = data.association.Id,
+                AssociationName = data.association.Name,
+                TotalMembers = totalMembers,
+                TotalShares = totalMembersShares,
+                TotalAmountSavedByMembers = totalAmountSavedByMembers,
+                TotalAmountOfLoanIssued = totalLoanIssued,
+                TotalAmountOfLoanRepaymentYetToBePaid = totalLoanRepaymentYetToBePaid,
+                TotalRepayments = totalRepayments
+            };
         }
+
     }
 
     public record AdminDashBoardOverviewDto
@@ -275,7 +273,6 @@ namespace CoopApplication.Persistence.Repository.Implementations
         public decimal TotalAmountSavedByMembers { get; init; }
         public decimal TotalAmountOfLoanIssued { get; init; }
         public decimal TotalAmountOfLoanRepaymentYetToBePaid { get; init; }
-        public IReadOnlyList<Defaulter> Defaulters { get; init; } = [];
         public decimal TotalRepayments { get; init; }
     }
 
