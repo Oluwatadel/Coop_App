@@ -2,12 +2,9 @@
 using CoopApplication.Domain.DTOs.ResponseModels;
 using CoopApplication.Domain.Enums;
 using CoopApplication.api.Exceptions;
-using CoopApplication.Persistence.Repository.Implementations;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
 using CoopApplication.Domain.Entities;
-using CoopApplication.api.Exceptions;
-
 
 namespace CoopApplication.Services.Implementations
 {
