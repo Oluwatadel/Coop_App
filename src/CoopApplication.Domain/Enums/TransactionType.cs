@@ -11,5 +11,6 @@ namespace CoopApplication.Domain.Enums
         LoanRepayment = 0,
         SavingsDeposit = 1,
         SharePurchase = 2,
+
     }
 }

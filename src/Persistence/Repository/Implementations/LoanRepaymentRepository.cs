@@ -25,5 +25,11 @@ namespace CoopApplication.Persistence.Repository.Implementations
             return await context.LoanRepayments
                 .FirstOrDefaultAsync(r => r.Id == repaymentId, cancellationToken);
         }
+        
+        public async Task<LoanRepayment?> FilterLoanRepaymentAsync(Guid repaymentId, CancellationToken cancellationToken)
+        {
+            return await context.LoanRepayments
+                .FirstOrDefaultAsync(r => r.Id == repaymentId, cancellationToken);
+        }
     }
 }

@@ -17,4 +17,9 @@ namespace CoopApplication.Domain.DTOs.ResponseModels
         public PaymentMethod PaymentMethod { get; set; }
         public DateTime Date { get; set; }
     }
+
+namespace CoopApplication.Domain.DTOs.ResponseModels
+{
+    public record LoanTypeResponse(Guid Id, string Name, string Description, decimal MinimumLoanRepayment,
+        decimal AnnualInterestRate, int LiquidityPeriodInMonths, int LoanVersion);
 }
