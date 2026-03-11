@@ -2,7 +2,7 @@
 {
     public class LoanRepayment
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Guid LoanId { get; set; }
         public Guid TransactionId { get; set; }
         public decimal Amount { get; set; }
