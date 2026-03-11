@@ -8,13 +8,23 @@ using Mapster;
 
 namespace CoopApplication.Services.Implementations
 {
-    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork, IRoleRepository roleRepository) : IUserService
+    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork, IRoleRepository roleRepository,
+        IAccountRepository accountRepository) : IUserService
     {
         public async Task<UserResponse> CreateUserAsync(UserRequest userRequest, CancellationToken cancellationToken)
         {
             var newUser = userRequest.Adapt<User>();
+            var role = await roleRepository.GetRoleByNameAsync("Member", cancellationToken);
+            if(role == null)
+            {
+                role = new("Member");
+                role = await roleRepository.CreateRoleAsync(role, cancellationToken);
+            }
+            newUser.RoleId = role.Id;
+            var newAccount = new Account();
+            _ = accountRepository.CreateAccountAsync(newAccount, cancellationToken);
             var returnedUser = userRepository.CreateUserAsync(newUser, cancellationToken);
-            var changes = await unitofWork.SaveChanges(cancellationToken);
+            var changes = await unitofWork.SaveChanges(cancellationToken) ;
             if (changes <= 0)
             {
                 throw new SaveOperationException("Something went wrong while saving the user. Please try again.");
