@@ -8,18 +8,46 @@ using Mapster;
 
 namespace CoopApplication.Services.Implementations
 {
-    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork, IRoleRepository roleRepository) : IUserService
+    public class UserService(IUserRepository userRepository, IUnitofWork unitofWork, IRoleRepository roleRepository,
+        IAccountRepository accountRepository, IAssociationRepository associationRepository) : IUserService
     {
         public async Task<UserResponse> CreateUserAsync(UserRequest userRequest, CancellationToken cancellationToken)
         {
-            var newUser = userRequest.Adapt<User>();
-            var returnedUser = userRepository.CreateUserAsync(newUser, cancellationToken);
-            var changes = await unitofWork.SaveChanges(cancellationToken);
+            var role = await roleRepository.GetRoleByNameAsync("Member", cancellationToken);
+            if (role == null)
+            {
+                role = new("Member");
+                role = await roleRepository.CreateRoleAsync(role, cancellationToken);
+            }
+            var exist = await userRepository.GetUserByEmailAsync(userRequest.Email, cancellationToken);
+            if(exist != null)
+            {
+                throw new AlreadyExistsException("User exist with the provided email already exist. Please use another email.");
+            }
+            var newUser = new User(userRequest.AssociationId, role.Id, userRequest.Firstname, userRequest.Lastname, userRequest.Email, userRequest.PhoneNumber);
+            
+            newUser.RoleId = role.Id;
+            var newAccount = new Account();
+            _ = accountRepository.CreateAccountAsync(newAccount, cancellationToken);
+            var returnedUser = await userRepository.CreateUserAsync(newUser, cancellationToken);
+            var changes = await unitofWork.SaveChanges(cancellationToken) ;
+            var association = await associationRepository.GetAssociationByIdAsync(returnedUser.AssociationId, cancellationToken);
+            var userRole = await roleRepository.GetRoleByIdAsync(returnedUser.RoleId, cancellationToken);
             if (changes <= 0)
             {
                 throw new SaveOperationException("Something went wrong while saving the user. Please try again.");
             }
-            return returnedUser.Adapt<UserResponse>();
+            return new UserResponse
+            {
+                AssociationName = association.Name,
+                Email = returnedUser.Email,
+                LastName = returnedUser.LastName,
+                FirstName = returnedUser.FirstName,
+                Phone = returnedUser.Phone,
+                Role = userRole.Name,
+                UserId = returnedUser.Id,
+                IsActive = returnedUser.IsActive
+            };
 
         }
 

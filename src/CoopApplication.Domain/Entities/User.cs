@@ -17,7 +17,6 @@ namespace CoopApplication.Domain.Entities
         public ICollection<Guid> TransactionIds { get; set; } = [];
 
         public User() { }
-
         public User(Guid associationId, Guid roleId, string firstName, string lastName, string email, string phone)
         {
             AssociationId = associationId;
