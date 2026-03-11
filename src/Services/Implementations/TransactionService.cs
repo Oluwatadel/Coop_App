@@ -1,10 +1,14 @@
-﻿using CoopApplication.Domain.DTOs.RequestModels;
+﻿using CoopApplication.api.Exceptions;
+using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.DTOs.ResponseModels;
+using CoopApplication.Domain.Entities;
 using CoopApplication.Domain.Enums;
-using CoopApplication.api.Exceptions;
+using CoopApplication.Persistence.Repository.Implementations;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
-using CoopApplication.Domain.Entities;
+using Microsoft.VisualBasic;
+using System.Security.Principal;
+
 
 namespace CoopApplication.Services.Implementations
 {
@@ -76,92 +80,129 @@ namespace CoopApplication.Services.Implementations
         }
 
         public async Task<TransactionResponse> ProcessTransactionAsync(
-            TransactionRequestDto request, CancellationToken cancellationToken)
+    TransactionRequestDto request, CancellationToken cancellationToken)
         {
             if (request.Amount <= 0)
                 throw new TransactionAmountException("Transaction amount must be greater than 0");
 
             decimal remainingAmount = request.Amount;
 
-            var transactions = new Transaction
+            var transaction = new Transaction
             {
                 UserId = request.UserId,
                 Amount = request.Amount,
                 PaymentMethod = request.PaymentMethod,
                 TransactionType = request.TransactionType,
-                Date = request.Date
+                Date = DateTime.UtcNow
             };
 
-            await _transactionRepository.CreateTransactionAsync(transactions, cancellationToken);
+            // Get or create account
+            var account = await _accountRepository
+                .GetAccountByUserIdAsync(request.UserId, cancellationToken);
 
-            var loans = await _loanTakenRepository
-                .GetLoanTakenByUserIdAsync(request.UserId, cancellationToken);
-
-            var orderedLoans = loans
-                .Where(l => l.Status == LoanStatus.Approved || l.Status == LoanStatus.Ongoing)
-                .OrderBy(l => l.StartDate)
-                .ToList();
-
-            foreach (var loan in orderedLoans)
+            if (account == null)
             {
-                if (remainingAmount <= 0)
-                    break;
-
-                var paymentAmount = Math.Min(loan.BalanceRemaining, remainingAmount);
-
-                var repayment = new LoanRepayment
-                {
-                    LoanId = loan.Id,
-                    Amount = paymentAmount,
-                    Date = DateTime.UtcNow
-                };
-
-                loan.RepaymentTransaction(repayment);
-
-                await _loanRepaymentRepository.CreateLoanRepaymentAsync(
-                    repayment,
-                    cancellationToken);
-
-                _loanTakenRepository.UpdateLoanTaken(loan);
-
-                remainingAmount -= paymentAmount;
-            }
-
-            if (remainingAmount > 0)
-            {
-                var account = await _accountRepository
-                    .GetAccountByUserIdAsync(request.UserId, cancellationToken);
-
-                if (account == null)
-                    throw new Exception("User account not found");
-
-                account.TotalShares += remainingAmount;
-
-                var savingsTransaction = new Transaction
+                var newAccount = new Account
                 {
                     UserId = request.UserId,
-                    Amount = remainingAmount,
-                    PaymentMethod = request.PaymentMethod,
-                    TransactionType = TransactionType.SavingsDeposit,
-                    Date = DateTime.UtcNow
+                    SavingsBalance = 0
                 };
 
-                await _transactionRepository.CreateTransactionAsync(
-                    savingsTransaction,
-                    cancellationToken);
+                account = await _accountRepository
+                    .CreateAccountAsync(newAccount, cancellationToken);
             }
+
+            if (request.TransactionType == TransactionType.LoanRepayment)
+            {
+                var loans = await _loanTakenRepository
+                    .GetLoanTakenByUserIdAsync(request.UserId, cancellationToken);
+
+                var orderedLoans = loans
+                    .Where(l => l.Status == LoanStatus.Approved || l.Status == LoanStatus.Ongoing)
+                    .OrderBy(l => l.StartDate)
+                    .ToList();
+
+                // If no active loans → deposit to savings
+                if (!orderedLoans.Any())
+                {
+                    account.SavingsBalance += remainingAmount;
+                    _accountRepository.UpdateAccount(account);
+                }
+                else
+                {
+                    // Repay loans oldest first
+                    foreach (var loan in orderedLoans)
+                    {
+                        if (remainingAmount <= 0)
+                            break;
+
+                        var paymentAmount = Math.Min(loan.BalanceRemaining, remainingAmount);
+
+                        var repayment = new LoanRepayment
+                        {
+                            LoanId = loan.Id,
+                            Amount = paymentAmount,
+                            Date = DateTime.UtcNow
+                        };
+
+                        loan.RepaymentTransaction(repayment);
+
+                        await _loanRepaymentRepository
+                            .CreateLoanRepaymentAsync(repayment, cancellationToken);
+
+                        _loanTakenRepository.UpdateLoanTaken(loan);
+
+                        remainingAmount -= paymentAmount;
+                    }
+
+                    // Handle remaining amount
+                    if (remainingAmount > 0)
+                    {
+                        var nextLoan = orderedLoans
+                            .FirstOrDefault(l => l.Status == LoanStatus.Ongoing && l.BalanceRemaining > 0);
+
+                        if (nextLoan != null && account.SavingsBalance >= 500000m)
+                        {
+                            var extraRepayment = new LoanRepayment
+                            {
+                                LoanId = nextLoan.Id,
+                                Amount = remainingAmount,
+                                Date = DateTime.UtcNow
+                            };
+
+                            nextLoan.RepaymentTransaction(extraRepayment);
+
+                            await _loanRepaymentRepository
+                                .CreateLoanRepaymentAsync(extraRepayment, cancellationToken);
+
+                            _loanTakenRepository.UpdateLoanTaken(nextLoan);
+
+                            remainingAmount = 0;
+                        }
+                        else
+                        {
+                            account.SavingsBalance += remainingAmount;
+                            _accountRepository.UpdateAccount(account);
+                        }
+                    }
+                }
+            }
+
+            // Save main transaction
+            var createdTransaction = await _transactionRepository
+                .CreateTransactionAsync(transaction, cancellationToken);
 
             await _unitofwork.SaveChanges(cancellationToken);
 
             return new TransactionResponse
             {
-                ReferenceNo = transactions.TransactionReferenceNo,
-                Id = transactions.Id,
-                UserId = transactions.UserId,
-                Amount = transactions.Amount,
-                PaymentMethod = transactions.PaymentMethod,
-                TransactionType = transactions.TransactionType,
-                Date = transactions.Date
+                ReferenceNo = createdTransaction.TransactionReferenceNo,
+                Id = createdTransaction.Id,
+                UserId = createdTransaction.UserId,
+                Amount = createdTransaction.Amount,
+                PaymentMethod = createdTransaction.PaymentMethod,
+                TransactionType = createdTransaction.TransactionType,
+                Date = createdTransaction.Date
             };
         }
     }
