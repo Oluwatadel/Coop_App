@@ -7,21 +7,15 @@ namespace CoopApplication.api.Controllers
 {
     [ApiController]
     [Route("api/v{version:apiVersion}/loans")]
-    public class LoanTakenController : ControllerBase
+    public class LoanTakenController(ILoanTakenService loanTakenService) : ControllerBase
     {
-        private readonly ILoanTakenService _loanTakenService;
-
-        public LoanTakenController(ILoanTakenService loanTakenService)
-        {
-            _loanTakenService = loanTakenService;
-        }
 
         [HttpPost("request")]
         public async Task<ActionResult<LoanTakenResponse>> RequestLoan(
             [FromBody] LoanTakenRequest request,
             CancellationToken cancellationToken)
         {
-            var loan = await _loanTakenService.RequestLoanAsync(request, cancellationToken);
+            var loan = await loanTakenService.RequestLoanAsync(request, cancellationToken);
 
             return Ok(loan);
         }
@@ -32,7 +26,7 @@ namespace CoopApplication.api.Controllers
             [FromQuery] Guid approverId,
             CancellationToken cancellationToken)
         {
-            var loan = await _loanTakenService.ApproveLoanAsync(loanId, approverId, cancellationToken);
+            var loan = await loanTakenService.ApproveLoanAsync(loanId, approverId, cancellationToken);
 
             return Ok(loan);
         }
@@ -42,7 +36,7 @@ namespace CoopApplication.api.Controllers
             Guid loanId,
             CancellationToken cancellationToken)
         {
-            var loan = await _loanTakenService.GetLoanByIdAsync(loanId, cancellationToken);
+            var loan = await loanTakenService.GetLoanByIdAsync(loanId, cancellationToken);
 
             if (loan == null)
                 return NotFound();
@@ -55,7 +49,7 @@ namespace CoopApplication.api.Controllers
             Guid userId,
             CancellationToken cancellationToken)
         {
-            var loans = await _loanTakenService.GetLoansByUserIdAsync(userId, cancellationToken);
+            var loans = await loanTakenService.GetLoansByUserIdAsync(userId, cancellationToken);
 
             return Ok(loans);
         }
@@ -64,7 +58,7 @@ namespace CoopApplication.api.Controllers
         public async Task<ActionResult<IReadOnlyList<LoanTakenResponse>>> GetAllLoans(
             CancellationToken cancellationToken)
         {
-            var loans = await _loanTakenService.GetAllLoansAsync(cancellationToken);
+            var loans = await loanTakenService.GetAllLoansAsync(cancellationToken);
 
             return Ok(loans);
         }
