@@ -33,7 +33,6 @@ public static class MigrationExtensions
             throw;
         }
     }
-
     private static void EnsureDbCreation(CoopDbContext context, ILogger logger)
     {
         var databaseName = context.Database.GetDbConnection().Database;
