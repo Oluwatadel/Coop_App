@@ -19,19 +19,26 @@ namespace CoopApplication.Services.Implementations
                 role = new("Member");
                 role = await roleRepository.CreateRoleAsync(role, cancellationToken);
             }
-            var exist = await userRepository.GetUserByEmailAsync(userRequest.Email, cancellationToken);
-            if(exist != null)
+            var exist = await userRepository.ExistAsync(userRequest.Email, userRequest.PhoneNumber, cancellationToken);
+            if(exist)
             {
-                throw new AlreadyExistsException("User exist with the provided email already exist. Please use another email.");
+                throw new AlreadyExistsException("User exist the provided email or phone number already exist. Please use another email and phone number.");
             }
             var newUser = new User(userRequest.AssociationId, role.Id, userRequest.Firstname, userRequest.Lastname, userRequest.Email, userRequest.PhoneNumber);
             
             newUser.RoleId = role.Id;
-            var newAccount = new Account();
+            var newAccount = new Account()
+            {
+                UserId = newUser.Id
+            };
             _ = accountRepository.CreateAccountAsync(newAccount, cancellationToken);
             var returnedUser = await userRepository.CreateUserAsync(newUser, cancellationToken);
             var changes = await unitofWork.SaveChanges(cancellationToken) ;
             var association = await associationRepository.GetAssociationByIdAsync(returnedUser.AssociationId, cancellationToken);
+            if(association == null)
+            {
+                throw new NotFoundException("Association does not exist");
+            }
             var userRole = await roleRepository.GetRoleByIdAsync(returnedUser.RoleId, cancellationToken);
             if (changes <= 0)
             {
