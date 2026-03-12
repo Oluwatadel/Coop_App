@@ -13,7 +13,4 @@ namespace CoopApplication.Services.Interfaces
         Task<IReadOnlyList<LoanTypeResponse>> GetAllLoanTpesAsync(CancellationToken cancellationToken);
 
     }
-
-    
-    
 }
