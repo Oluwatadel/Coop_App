@@ -162,21 +162,25 @@ namespace CoopApplication.Persistence.Repository.Implementations
         {
             //To add pagination later
             var query = from user in context.Users
-                        join association in context.Associations
-                        on user.AssociationId equals association.Id
                         join role in context.Roles
                         on user.RoleId equals role.Id
-                        select new UserResponse
-                        {
-                            UserId = user.Id,
-                            AssociationName = association.Name,
-                            Email = user.Email,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            Phone = user.Phone,
-                            Role = role.Name
-                        };
-            var data = await query.OrderByDescending(u => u.LastName)
+                        where user.AssociationId == associationId
+                        select new { user, role};
+            var association = await context.Associations.FirstOrDefaultAsync(a => a.Id == associationId, cancellationToken);
+            var data = await query
+                .Where(a => a.user.AssociationId == associationId)
+                .OrderByDescending(u => u.user.LastName)
+                .Select(a => new UserResponse
+                {
+                    AssociationName = association.Name,
+                    IsActive = a.user.IsActive,
+                    Email = a.user.Email,
+                    FirstName = a.user.FirstName,
+                    LastName = a.user.LastName,
+                    Phone = a.user.Phone,
+                    Role = a.role.Name,
+                    UserId = a.user.Id
+                })
                 .ToListAsync(cancellationToken);
             return data;
         }
