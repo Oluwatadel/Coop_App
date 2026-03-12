@@ -1,4 +1,6 @@
-﻿using CoopApplication.Services.Implementations;
+﻿using CoopApplication.Persistence.Repository.Implementations;
+using CoopApplication.Persistence.Repository.Interfaces;
+using CoopApplication.Services.Implementations;
 using CoopApplication.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +18,7 @@ namespace CoopApplication.Services.Extension
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ILoanTypeService, LoanTypeService>();
             services.AddScoped<ILoanTakenService, LoanTakenService>();
+            services.AddScoped<IDashBoardService, DashBoardService>();
             return services;
         }
     }

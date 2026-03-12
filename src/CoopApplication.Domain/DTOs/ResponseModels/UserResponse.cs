@@ -20,5 +20,6 @@
         public string Email { get; init; }
         public string Phone { get; init; }
         public bool IsActive { get; init; }
+        public string Role { get; init; }
     }
 }
