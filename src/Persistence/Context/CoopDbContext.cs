@@ -29,5 +29,45 @@ namespace CoopApplication.Persistence.Context
         {
             base.ConfigureConventions(configurationBuilder);
         }
+
+        public static void SeedAdminUser(CoopDbContext context)
+        {
+            // Ensure admin role exists
+            var adminRole = context.Roles.FirstOrDefault(r => r.Name == "Admin");
+            if (adminRole == null)
+            {
+                adminRole = new Role("Admin");
+                context.Roles.Add(adminRole);
+                context.SaveChanges();
+            }
+
+            // Ensure association exists
+            var association = context.Associations.FirstOrDefault();
+            if (association == null)
+            {
+                association = new Association("Onward", "Default Association");
+                context.Associations.Add(association);
+                context.SaveChanges();
+            }
+
+            // Check if admin user already exists
+            var adminUser = context.Users.FirstOrDefault(u => u.Email == "admin@coop.com");
+            if (adminUser == null)
+            {
+                adminUser = new User
+                {
+                    FirstName = "Admin",
+                    LastName = "User",
+                    Email = "admin@coop.com",
+                    Phone = "1234567890",
+                    RoleId = adminRole.Id,
+                    AssociationId = association.Id,
+                    IsActive = true
+                    // Set other required properties
+                };
+                context.Users.Add(adminUser);
+                context.SaveChanges();
+            }
+        }
     }
 }

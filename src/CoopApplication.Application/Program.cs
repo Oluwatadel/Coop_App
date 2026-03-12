@@ -1,6 +1,7 @@
 using AdmissionService.Infrastructure.Persistence.Extensions;
 using CoopApplication.api.Extension;
 using CoopApplication.api.Middleware;
+using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Extension;
 using CoopApplication.Services.Extension;
 using Dayspring_Backend.Extension;
@@ -35,6 +36,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<CoopDbContext>();
+    CoopDbContext.SeedAdminUser(dbContext);
+}
 
 MigrationExtensions.ApplyMigration(app.Services, ensureDbCreated: true);
 
