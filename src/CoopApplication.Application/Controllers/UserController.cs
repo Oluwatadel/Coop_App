@@ -15,6 +15,13 @@ namespace CoopApplication.api.Controllers
             return Ok(users);
         }
 
+        [HttpGet("{associationId:guid}/association-members")]
+        public async Task<IActionResult> GetUsersByAssociationId([FromRoute] Guid associationId, CancellationToken cancellationToken)
+        {
+            var users = await userService.GetMembersOfAnAssociation(associationId, cancellationToken);
+            return Ok(users);
+        }
+
         [HttpGet("{userId:guid}/user")]
         public async Task<IActionResult> GetUserById([FromRoute] Guid userId, CancellationToken cancellationToken)
         {
