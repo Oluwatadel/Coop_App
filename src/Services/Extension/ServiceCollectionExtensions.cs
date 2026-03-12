@@ -15,6 +15,7 @@ namespace CoopApplication.Services.Extension
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<ILoanTypeService, LoanTypeService>();
+            services.AddScoped<ILoanTakenService, LoanTakenService>();
             return services;
         }
     }
