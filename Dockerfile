@@ -12,8 +12,8 @@ WORKDIR /src
 
 COPY src/CoopApplication.Application/CoopApplication.api.csproj src/CoopApplication.Application/
 COPY src/CoopApplication.Domain/CoopApplication.Domain.csproj src/CoopApplication.Domain/
-COPY src/CoopApplication.Persistence/CoopApplication.Persistence.csproj src/CoopApplication.Persistence/
-COPY src/CoopApplication.Services/CoopApplication.Services.csproj src/CoopApplication.Services/
+COPY src/Persistence/CoopApplication.Persistence.csproj src/Persistence/
+COPY src/Services/CoopApplication.Services.csproj src/Services/
 COPY src/CoopApplication.Application/CoopApplication.sln src/CoopApplication.Application/
 RUN dotnet restore src/CoopApplication.Application/CoopApplication.api.csproj
 
