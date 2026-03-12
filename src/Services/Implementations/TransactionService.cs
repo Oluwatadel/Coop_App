@@ -26,7 +26,7 @@ namespace CoopApplication.Services.Implementations
         {
             _transactionRepository = transactionRepository;
             _loanRepaymentRepository = loanRepaymentRepository;
-            _accountRepository = accountRepository;
+            _accountRepository = accountRepository; 
             _loanTakenRepository = loanTakenRepository;
             _unitofwork = unitofwork;
         }
@@ -90,6 +90,7 @@ namespace CoopApplication.Services.Implementations
             var transaction = new Transaction
             {
                 UserId = request.UserId,
+                TransactionReferenceNo = request.TransactionReferenceNo,
                 Amount = request.Amount,
                 PaymentMethod = request.PaymentMethod,
                 TransactionType = request.TransactionType,
@@ -127,6 +128,8 @@ namespace CoopApplication.Services.Implementations
                 {
                     account.SavingsBalance += remainingAmount;
                     _accountRepository.UpdateAccount(account);
+                    transaction.TransactionType = TransactionType.SavingsDeposit;
+                    remainingAmount = 0;
                 }
                 else
                 {
