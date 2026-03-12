@@ -169,7 +169,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
                         {
                             UserId = user.Id,
                             AssociationName = association.Name,
-                            RoleId = role.Id,
+                            Role = role.Name,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             Email = user.Email,
@@ -208,7 +208,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
             return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<AdminDashBoardOverviewDto> GetAdminDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken)
+        public async Task<ManagerDashBoardOverviewDto> GetManagerDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken)
         {
             var query = from user in context.Users
                         join association in context.Associations
@@ -245,10 +245,11 @@ namespace CoopApplication.Persistence.Repository.Implementations
             var totalLoanRepaymentYetToBePaid = await members.SumAsync(a => a.loan.BalanceRemaining, cancellationToken);
             var totalRepayments = await members.SumAsync(a => a.loan.TotalRepaymentAmount - a.loan.BalanceRemaining, cancellationToken);
 
-            return new AdminDashBoardOverviewDto
+            return new ManagerDashBoardOverviewDto
             {
                 AdminId = userResponse.UserId,
                 FullName = $"{userResponse.LastName} {userResponse.FirstName}",
+                Role = "Manager",
                 AssociationId = data.association.Id,
                 AssociationName = data.association.Name,
                 TotalMembers = totalMembers,
@@ -260,12 +261,88 @@ namespace CoopApplication.Persistence.Repository.Implementations
             };
         }
 
+        public async Task<AdminDashBoardOverviewDto> GetAdminDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken)
+        {
+            var admin = await (
+             from u in context.Users
+             where u.Id == userId
+             select new
+             {
+                 u.Id,
+                 u.FirstName,
+                 u.LastName
+             })
+             .FirstOrDefaultAsync(cancellationToken);
+
+                if (admin == null)
+                    throw new Exception("Admin not found");
+
+                var dashboardStats = await (
+                    from dummy in context.Users.Take(1)
+                    select new
+                    {
+                        TotalMembers = context.Users.Count(),
+
+                        TotalShares = context.Accounts.Sum(a => (decimal?)a.TotalShares) ?? 0,
+
+                        TotalSavings = context.Accounts.Sum(a => (decimal?)a.SavingsBalance) ?? 0,
+
+                        TotalLoanIssued = context.LoanTaken.Sum(l => (decimal?)l.PrincipalAmount) ?? 0,
+
+                        TotalLoanRemaining = context.LoanTaken.Sum(l => (decimal?)l.BalanceRemaining) ?? 0,
+
+                        TotalRepayments = context.LoanTaken
+                            .Sum(l => (decimal?)(l.TotalRepaymentAmount - l.BalanceRemaining)) ?? 0
+                    })
+                    .FirstAsync(cancellationToken);
+
+                var associationDictionary = await (
+                    from association in context.Associations
+                    join user in context.Users
+                        on association.Id equals user.AssociationId into members
+                    select new
+                    {
+                        AssociationName = association.Name,
+                        MemberCount = members.Count()
+                    })
+                    .ToDictionaryAsync(x => x.AssociationName, x => x.MemberCount, cancellationToken);
+
+                return new AdminDashBoardOverviewDto
+                {
+                    AdminId = admin.Id,
+                    FullName = $"Super Admin",
+                    Role = "SuperAdmin",
+                    AssociationAndTotalMembers = associationDictionary,
+                    TotalMembers = dashboardStats.TotalMembers,
+                    TotalShares = dashboardStats.TotalShares,
+                    TotalAmountSavedByMembers = dashboardStats.TotalSavings,
+                    TotalAmountOfLoanIssued = dashboardStats.TotalLoanIssued,
+                    TotalAmountOfLoanRepaymentYetToBePaid = dashboardStats.TotalLoanRemaining,
+                    TotalRepayments = dashboardStats.TotalRepayments
+                };
+            }
+
     }
 
     public record AdminDashBoardOverviewDto
     {
         public Guid AdminId { get; init; }
         public string FullName { get; init; }
+        public string Role { get; init; }
+        public Dictionary<string, int> AssociationAndTotalMembers { get; init; }
+        public int TotalMembers { get; init; }
+        public decimal TotalShares { get; init; }
+        public decimal TotalAmountSavedByMembers { get; init; }
+        public decimal TotalAmountOfLoanIssued { get; init; }
+        public decimal TotalAmountOfLoanRepaymentYetToBePaid { get; init; }
+        public decimal TotalRepayments { get; init; }
+    }
+
+    public record ManagerDashBoardOverviewDto
+    {
+        public Guid AdminId { get; init; }
+        public string FullName { get; init; }
+        public string Role { get; init; }
         public Guid AssociationId { get; init; }
         public string AssociationName { get; init; }
         public int TotalMembers { get; init; }
@@ -276,20 +353,12 @@ namespace CoopApplication.Persistence.Repository.Implementations
         public decimal TotalRepayments { get; init; }
     }
 
-    public record Defaulter
-    {         
-        public Guid UserId { get; init; }
-        public string FullName { get; init; }
-        public string Email { get; init; }
-        public string Phone { get; init; }
-        public decimal AmountDue { get; init; }
-    }
 
     public record UserDashBoardOverviewDto
     {
         public Guid UserId { get; set; }
         public string AssociationName { get; init; }
-        public Guid RoleId { get; init; }
+        public string Role { get; init; }
         public string FirstName { get; init; }
         public string LastName { get; init; }
         public string Email { get; init; }
