@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CoopApplication.Domain.DTOs.RequestModels;
+﻿using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.DTOs.ResponseModels;
+using CoopApplication.Domain.Enums;
 
 namespace CoopApplication.Services.Interfaces
 {
     public interface  ILoanTakenService
     {
         Task<LoanTakenResponse> RequestLoanAsync(
-           LoanTakenRequest request,CancellationToken cancellationToken);
+         LoanTakenRequest request,CancellationToken cancellationToken);
 
         Task<LoanTakenResponse> ApproveLoanAsync(
             Guid loanId,Guid approverId,CancellationToken cancellationToken);
