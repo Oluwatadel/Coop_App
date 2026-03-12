@@ -31,8 +31,12 @@ var app = builder.Build();
 app.ConfigureExceptionHandler();
 app.ConfigureCORS();
 app.ConfigureSwagger();
+
+// Render/Browser hits the root path by default; provide something useful there.
+app.MapGet("/", () => Results.Redirect("/swagger"));
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
