@@ -62,39 +62,41 @@ namespace CoopApplication.Services.Implementations
 
         }
 
-        public async Task<UserDTO?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<UserResponse?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
         {
             var user = await userRepository.GetUserByEmailAsync(email, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("User with the provided email does not exist.");
             }
-            return new UserDTO
+            return new UserResponse
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
                 Phone = user.Phone,
                 IsActive = user.IsActive,
-                UserId = user.Id,
+                UserId = user.UserId,
+                Role = user.Role
             };
         }
 
-        public async Task<UserDTO?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken)
+        public async Task<UserResponse?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken)
         {
             var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("User with the provided email does not exist.");
             }
-            return new UserDTO
+            return new UserResponse
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
                 Phone = user.Phone,
                 IsActive = user.IsActive,
-                UserId = user.Id,
+                UserId = user.UserId,
+                Role = user.Role
             };
         }
 
@@ -106,7 +108,7 @@ namespace CoopApplication.Services.Implementations
 
         public async Task<UserResponse> UpdateUserAsync(Guid userId, UpdateUserRequest request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await userRepository.GetUserById(userId, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("User with the provided id does not exist.");
@@ -118,14 +120,29 @@ namespace CoopApplication.Services.Implementations
             return returnUser;
         }
 
-        public async Task<bool> UserExistAsync(LoginRequest request, CancellationToken cancellationToken)
+        public async Task<UserResponse> UserExistAsync(LoginRequest request, CancellationToken cancellationToken)
         {
-            return await userRepository.ExistAsync(request.Email, request.PhoneNumber, cancellationToken);
+            var response = await userRepository.ExistAsync(request.Email, request.PhoneNumber, cancellationToken);
+            if (!response)
+                throw new NotFoundException("User with the following details doesnt exist");
+            var result = await userRepository.GetUserByEmailAsync(request.Email, cancellationToken);
+            if(result == null)
+                throw new NotFoundException("User with the following details doesnt exist");
+            return new UserResponse
+            {
+                FirstName = result.FirstName,
+                LastName = result.LastName,
+                Email = result.Email,
+                Phone = result.Phone,
+                IsActive = result.IsActive,
+                UserId = result.UserId,
+                Role = result.Role
+            };
         }
 
         public async Task<UserResponse> AssignRoleAsync(Guid roleId, Guid userId, CancellationToken cancellationToken)
         {
-            var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
+            var user = await userRepository.GetUserById(userId, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("User with the provided id does not exist.");

@@ -53,7 +53,49 @@ namespace CoopApplication.Persistence.Repository.Implementations
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<UserResponse?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            var query = await (from user in context.Users
+                        join association in context.Associations
+                        on user.AssociationId equals association.Id
+                        join role in context.Roles
+                        on user.RoleId equals role.Id
+                        select new UserResponse
+                        {
+                            UserId = user.Id,
+                            AssociationName = association.Name,
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Phone = user.Phone,
+                            IsActive = user.IsActive,
+                            Role = role.Name
+                        }).FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+            return query;
+        }
+
+        public async Task<UserResponse?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var query = await (from user in context.Users
+                        join association in context.Associations
+                        on user.AssociationId equals association.Id
+                        join role in context.Roles
+                        on user.RoleId equals role.Id
+                        select new UserResponse
+                        {
+                            UserId = userId,
+                            AssociationName = association.Name,
+                            Email = user.Email,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Phone = user.Phone,
+                            IsActive = user.IsActive,
+                            Role = role.Name
+                        }).FirstOrDefaultAsync(u => u.UserId == userId, cancellationToken);
+            return query;
+        }
+
+        public async Task<User?> GetUserById(Guid userId, CancellationToken cancellationToken)
         {
             var query = from user in context.Users
                         join association in context.Associations
@@ -61,21 +103,9 @@ namespace CoopApplication.Persistence.Repository.Implementations
                         join role in context.Roles
                         on user.RoleId equals role.Id
                         select user;
-            return await query.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+            var result = await query.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            return result;
         }
-
-        public async Task<User?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken)
-        {
-            var query = from user in context.Users
-                        join association in context.Associations
-                        on user.AssociationId equals association.Id
-                        join role in context.Roles
-                        on user.RoleId equals role.Id
-                        select user;
-            return await query
-                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
-        }
-
         public UserResponse UpdateUser(User user)
         {
             context.Users.Update(user);
@@ -155,15 +185,15 @@ namespace CoopApplication.Persistence.Repository.Implementations
         {
             var query = from user in context.Users
                         join association in context.Associations
-                        on user.AssociationId equals association.Id
+                            on user.AssociationId equals association.Id
                         join role in context.Roles
-                        on user.RoleId equals role.Id
-                        join loan in context.LoanTaken
-                        on user.Id equals loan.UserId
-                        join transaction in context.Transactions
-                        on user.Id equals transaction.UserId
+                            on user.RoleId equals role.Id
                         join account in context.Accounts
-                        on user.Id equals account.UserId
+                            on user.Id equals account.UserId into accountGroup
+                        from account in accountGroup.DefaultIfEmpty()
+                        join loan in context.LoanTaken
+                            on user.Id equals loan.UserId into loanGroup
+                        from loan in loanGroup.DefaultIfEmpty()
                         where user.Id == userId
                         select new UserDashBoardOverviewDto
                         {
@@ -174,38 +204,34 @@ namespace CoopApplication.Persistence.Repository.Implementations
                             LastName = user.LastName,
                             Email = user.Email,
                             Phone = user.Phone,
-                            LoansTakens = context.LoanTaken.Where(l => l.UserId == user.Id)
-                                .Select(l => new LoanTakenDto
-                                {
-                                    UserId = l.UserId,
-                                    LoanType = l.LoanType,
-                                    PrincipalAmount = l.PrincipalAmount,
-                                    TotalRepaymentAmount = l.TotalRepaymentAmount,
-                                    MonthlyPaymentAmount = l.MonthlyPaymentAmount,
-                                    BalanceRemaining = l.BalanceRemaining,
-                                    Status = l.Status,
-                                    StartDate = l.StartDate,
-                                    EndDate = l.EndDate,
-                                    LoanRepayments = context.LoanRepayments.Where(r => r.LoanId == l.Id).ToHashSet()
-                                }).ToList(),
-                            Transactions = context.Transactions.Where(t => t.UserId == user.Id)
-                                .Select(t => new TransactionDto
-                                {
-                                    Id = t.Id,
-                                    ReferenceNo = t.TransactionReferenceNo,
-                                    Amount = t.Amount,
-                                    TransactionType = t.TransactionType,
-                                    PaymentMethod = t.PaymentMethod,
-                                    Date = t.Date
-                                }).ToList(),
-                            Account = new AccountDto
+                            Account = account == null ? null : new AccountDto
                             {
                                 TotalShares = account.TotalShares,
                                 SavingsBalance = account.SavingsBalance,
                                 TotalInterestAccrued = account.TotalInterestAccrued
-                            }
+                            },
+                            LoansTakens = loan == null
+                                ? new List<LoanTakenDto>()
+                                : new List<LoanTakenDto>
+                                {
+                                    new LoanTakenDto
+                                    {
+                                        UserId = loan.UserId,
+                                        LoanType = loan.LoanType,
+                                        PrincipalAmount = loan.PrincipalAmount,
+                                        TotalRepaymentAmount = loan.TotalRepaymentAmount,
+                                        MonthlyPaymentAmount = loan.MonthlyPaymentAmount,
+                                        BalanceRemaining = loan.BalanceRemaining,
+                                        Status = loan.Status,
+                                        StartDate = loan.StartDate,
+                                        EndDate = loan.EndDate,
+                                        LoanRepayments = loan.LoanRepayments ?? new HashSet<LoanRepayment>()
+                                    }
+                                }
                         };
-            return await query.FirstOrDefaultAsync(cancellationToken);
+
+            var result = await query.FirstOrDefaultAsync(cancellationToken);
+            return result;
         }
 
         public async Task<ManagerDashBoardOverviewDto> GetManagerDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken)
@@ -215,7 +241,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
                         on user.AssociationId equals association.Id
                         join role in context.Roles
                         on user.RoleId equals role.Id
-                        where association.Id == user.Id
+                        where association.Id == user.AssociationId
                         select new { user, association, role };
             var data = await query.FirstOrDefaultAsync(u => u.user.Id == userId, cancellationToken);
             var userResponse = new UserResponse
@@ -274,23 +300,15 @@ namespace CoopApplication.Persistence.Repository.Implementations
              })
              .FirstOrDefaultAsync(cancellationToken);
 
-                if (admin == null)
-                    throw new Exception("Admin not found");
-
                 var dashboardStats = await (
                     from dummy in context.Users.Take(1)
                     select new
                     {
                         TotalMembers = context.Users.Count(),
-
                         TotalShares = context.Accounts.Sum(a => (decimal?)a.TotalShares) ?? 0,
-
                         TotalSavings = context.Accounts.Sum(a => (decimal?)a.SavingsBalance) ?? 0,
-
                         TotalLoanIssued = context.LoanTaken.Sum(l => (decimal?)l.PrincipalAmount) ?? 0,
-
                         TotalLoanRemaining = context.LoanTaken.Sum(l => (decimal?)l.BalanceRemaining) ?? 0,
-
                         TotalRepayments = context.LoanTaken
                             .Sum(l => (decimal?)(l.TotalRepaymentAmount - l.BalanceRemaining)) ?? 0
                     })

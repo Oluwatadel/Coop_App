@@ -8,8 +8,8 @@ namespace CoopApplication.Persistence.Repository.Interfaces
     public interface  IUserRepository
     {
         Task<User> CreateUserAsync(User user, CancellationToken cancellationToken);
-        Task<User?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken);
-        Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
+        Task<UserResponse?> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken);
+        Task<UserResponse?> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
         Task<bool> ExistAsync(string email, string? phoneNumber, CancellationToken cancellationToken);
         Task<IReadOnlyList<UserResponse>> GetAllUsersAsync(CancellationToken cancellationToken);
         UserResponse UpdateUser(User user);
@@ -17,5 +17,7 @@ namespace CoopApplication.Persistence.Repository.Interfaces
         Task<IReadOnlyList<UserResponse>> GetMembersOfAnAssociation(Guid associationId, CancellationToken cancellationToken);
         Task<UserDashBoardOverviewDto?> GetUserDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken);
         Task<ManagerDashBoardOverviewDto> GetManagerDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken);
+        Task<AdminDashBoardOverviewDto> GetAdminDashBoardOverviewDto(Guid userId, CancellationToken cancellationToken);
+        Task<User?> GetUserById(Guid userId, CancellationToken cancellationToken);
     }
 }
