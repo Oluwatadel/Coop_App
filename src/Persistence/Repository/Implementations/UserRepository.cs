@@ -259,7 +259,6 @@ namespace CoopApplication.Persistence.Repository.Implementations
                 TotalRepayments = totalRepayments
             };
         }
-
     }
 
     public record AdminDashBoardOverviewDto
