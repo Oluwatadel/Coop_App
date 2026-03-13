@@ -318,16 +318,12 @@ namespace CoopApplication.Persistence.Repository.Implementations
                     })
                     .FirstAsync(cancellationToken);
 
-                var associationDictionary = await (
-                    from association in context.Associations
-                    join user in context.Users
-                        on association.Id equals user.AssociationId into members
-                    select new
-                    {
-                        AssociationName = association.Name,
-                        MemberCount = members.Count()
-                    })
-                    .ToDictionaryAsync(x => x.AssociationName, x => x.MemberCount, cancellationToken);
+            var associationDictionary = await (
+                from association in context.Associations
+                join user in context.Users
+                    on association.Id equals user.AssociationId into members
+                select new AssociationDto(association.Id, association.Name, association.Description, members.Count()))
+                    .ToListAsync(cancellationToken);
 
                 return new AdminDashBoardOverviewDto
                 {

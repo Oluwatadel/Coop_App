@@ -1,10 +1,5 @@
 ﻿using CoopApplication.Domain.Entities;
 using CoopApplication.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoopApplication.Domain.DTOs.ResponseModels
 {
@@ -13,7 +8,7 @@ namespace CoopApplication.Domain.DTOs.ResponseModels
         public Guid AdminId { get; init; }
         public string FullName { get; init; }
         public string Role { get; init; }
-        public Dictionary<string, int> AssociationAndTotalMembers { get; init; }
+        public IReadOnlyList<AssociationDto> AssociationAndTotalMembers { get; init; } = [];
         public int TotalMembers { get; init; }
         public decimal TotalShares { get; init; }
         public decimal TotalAmountSavedByMembers { get; init; }
