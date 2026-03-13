@@ -1,4 +1,5 @@
-﻿using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.DTOs.ResponseModels;
+using CoopApplication.Domain.Entities;
 
 namespace CoopApplication.Services.Interfaces
 {
@@ -8,6 +9,6 @@ namespace CoopApplication.Services.Interfaces
         Task<Association> UpdateAssociationAsync(Guid associationId, string name, CancellationToken cancellationToken);
         Task<Association> GetAssociationByNameAsync(string name, CancellationToken cancellationToken);
         Task<Association> GetAssociationByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<IReadOnlyList<Association>> GetAllAssociation(CancellationToken cancellationToken);
+        Task<IReadOnlyList<AssociationDto>> GetAllAssociation(CancellationToken cancellationToken);
     }
 }

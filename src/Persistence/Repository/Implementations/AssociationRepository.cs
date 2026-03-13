@@ -1,12 +1,8 @@
-﻿using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.DTOs.ResponseModels;
+using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CoopApplication.Persistence.Repository.Implementations
 {
@@ -32,9 +28,20 @@ namespace CoopApplication.Persistence.Repository.Implementations
             return any;
         }
 
-        public async Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<AssociationDto>> GetAllAssociations(CancellationToken cancellationToken)
         {
-            var data = await context.Associations.ToListAsync(cancellationToken);
+            var query = from association in context.Associations
+                        join user in context.Users
+                        on association.Id equals user.AssociationId into userGroup
+                        select new AssociationDto(
+                            association.Id,
+                            association.Name,
+                            association.Description,
+                            userGroup.Count()
+                        );
+
+            var data = await query.ToListAsync(cancellationToken);
+
             return data;
         }
 

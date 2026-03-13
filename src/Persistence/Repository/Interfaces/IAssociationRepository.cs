@@ -1,4 +1,5 @@
-﻿using CoopApplication.Domain.Entities;
+﻿using CoopApplication.Domain.DTOs.ResponseModels;
+using CoopApplication.Domain.Entities;
 
 namespace CoopApplication.Persistence.Repository.Interfaces
 {
@@ -7,7 +8,7 @@ namespace CoopApplication.Persistence.Repository.Interfaces
         Task<Association> AddAssociationAsync(Association association, CancellationToken cancellationToken);
         Task<Association> GetAssociationByIdAsync(Guid associationId, CancellationToken cancellationToken);
         Task<Association> GetAssociationByNameAsync(string associationName, CancellationToken cancellationToken);
-        Task<IReadOnlyList<Association>> GetAllAssociations(CancellationToken cancellationToken);
+        Task<IReadOnlyList<AssociationDto>> GetAllAssociations(CancellationToken cancellationToken);
         Association UpdateAsscociation(Association association);
         Task<bool> AsscociationExist(Guid associationId, CancellationToken cancellationToken);
         Task<bool> AsscociationExistWithName(string name, CancellationToken cancellationToken);
