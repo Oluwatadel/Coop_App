@@ -16,7 +16,7 @@ namespace CoopApplication.Api.Controllers
         }
 
         [HttpGet("loan/{loanId}")]
-        public async Task<ActionResult<IReadOnlyList<RepaymentResponse>>> GetRepaymentsByLoanId(
+        public async Task<ActionResult<IReadOnlyList<LoanRepaymentResponse>>> GetRepaymentsByLoanId(
             Guid loanId,
             CancellationToken cancellationToken)
         {
@@ -27,7 +27,7 @@ namespace CoopApplication.Api.Controllers
         }
 
         [HttpGet("{repaymentId}")]
-        public async Task<ActionResult<RepaymentResponse>> GetRepaymentById(
+        public async Task<ActionResult<LoanRepaymentResponse>> GetRepaymentById(
             Guid repaymentId,
             CancellationToken cancellationToken)
         {
