@@ -1,6 +1,6 @@
 ﻿namespace CoopApplication.Domain.DTOs.ResponseModels;
 
-public record RepaymentResponse(
+public record LoanRepaymentResponse(
     Guid Id,
     Guid LoanId,
     Guid TransactionId,

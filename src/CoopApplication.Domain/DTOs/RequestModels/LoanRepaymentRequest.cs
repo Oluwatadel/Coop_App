@@ -1,6 +1,6 @@
 ﻿namespace CoopApplication.Domain.DTOs.RequestModels;
 
-public record RepaymentRequest(
+public record LoanRepaymentRequest(
     Guid? LoanId,
     Guid? UserId,
     Guid? TransactionId

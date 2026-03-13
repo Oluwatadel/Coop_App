@@ -4,11 +4,11 @@ namespace CoopApplication.Services.Interfaces
 {
     public interface ILoanRepaymentService
     {
-        Task<IReadOnlyList<RepaymentResponse>> GetRepaymentsByLoanIdAsync(
+        Task<IReadOnlyList<LoanRepaymentResponse>> GetRepaymentsByLoanIdAsync(
             Guid loanId,
             CancellationToken cancellationToken);
 
-        Task<RepaymentResponse?> GetRepaymentByIdAsync(
+        Task<LoanRepaymentResponse?> GetRepaymentByIdAsync(
             Guid repaymentId,
             CancellationToken cancellationToken);
     }

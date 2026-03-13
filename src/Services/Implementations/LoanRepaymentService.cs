@@ -13,14 +13,14 @@ namespace CoopApplication.Services.Implementations
             _loanRepaymentRepository = loanRepaymentRepository;
         }
 
-        public async Task<IReadOnlyList<RepaymentResponse>> GetRepaymentsByLoanIdAsync(
+        public async Task<IReadOnlyList<LoanRepaymentResponse>> GetRepaymentsByLoanIdAsync(
             Guid loanId,
             CancellationToken cancellationToken)
         {
             var repayments = await _loanRepaymentRepository
                 .GetLoanRepaymentsByLoanIdAsync(loanId, cancellationToken);
 
-            return repayments.Select(r => new RepaymentResponse(
+            return repayments.Select(r => new LoanRepaymentResponse(
                 r.Id,
                 r.LoanId,
                 r.TransactionId,
@@ -31,7 +31,7 @@ namespace CoopApplication.Services.Implementations
             )).ToList();
         }
 
-        public async Task<RepaymentResponse?> GetRepaymentByIdAsync(
+        public async Task<LoanRepaymentResponse?> GetRepaymentByIdAsync(
             Guid repaymentId,
             CancellationToken cancellationToken)
         {
@@ -41,7 +41,7 @@ namespace CoopApplication.Services.Implementations
             if (repayment == null)
                 return null;
 
-            return new RepaymentResponse(
+            return new LoanRepaymentResponse(
                 repayment.Id,
                 repayment.LoanId,
                 repayment.TransactionId,
