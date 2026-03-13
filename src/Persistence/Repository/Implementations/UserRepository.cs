@@ -1,7 +1,6 @@
 ﻿using CoopApplication.Domain.DTOs.RequestModels;
 using CoopApplication.Domain.DTOs.ResponseModels;
 using CoopApplication.Domain.Entities;
-using CoopApplication.Domain.Enums;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
