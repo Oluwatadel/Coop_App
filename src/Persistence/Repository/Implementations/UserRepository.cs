@@ -46,7 +46,9 @@ namespace CoopApplication.Persistence.Repository.Implementations
                             FirstName = user.FirstName,
                             LastName = user.LastName,
                             Phone = user.Phone,
-                            Role = role.Name
+                            Role = role.Name,
+                            IsActive = user.IsActive
+
                         };
             return await query.OrderByDescending(u => u.AssociationName)
                 .ToListAsync(cancellationToken);
@@ -153,7 +155,8 @@ namespace CoopApplication.Persistence.Repository.Implementations
                 FirstName = a.user.FirstName,
                 LastName = a.user.LastName,
                 Phone = a.user.Phone,
-                Role = a.role.Name
+                Role = a.role.Name,
+                IsActive = a.user.IsActive
             })];
         }
 
