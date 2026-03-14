@@ -2,7 +2,9 @@
 using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Context;
 using CoopApplication.Persistence.Repository.Interfaces;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CoopApplication.Persistence.Repository.Implementations
 {
@@ -33,12 +35,21 @@ namespace CoopApplication.Persistence.Repository.Implementations
             var query = from association in context.Associations
                         join user in context.Users
                         on association.Id equals user.AssociationId into userGroup
+                        let userId = userGroup.Select(u => u.Id)
+                        let loans = context.LoanTaken.Where(l => userId.Contains(l.UserId))
                         select new AssociationDto(
-                            association.Id,
-                            association.Name,
-                            association.Description,
-                            userGroup.Count()
-                        );
+                    association.Id,
+                    association.Name,
+                    association.Description,
+                    userGroup.Count(),
+                    new AssociationLoanSummary(
+                        loans.Count(),
+                        loans.Sum(l => (decimal?)l.PrincipalAmount) ?? 0,
+                        loans.Sum(l => (decimal?)l.BalanceRemaining) ?? 0,
+                        context.Accounts.Where(a => userId.Contains(a.UserId))
+                            .Sum(a => (decimal?)a.SavingsBalance) ?? 0
+                    )
+                );
 
             var data = await query.ToListAsync(cancellationToken);
 

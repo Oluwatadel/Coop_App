@@ -17,7 +17,7 @@ namespace CoopApplication.api.Controllers
         
         [HttpGet("admin/{userId:guid}")]
         public async Task<IActionResult> GetAdminDashboardOverview([FromRoute] Guid userId, CancellationToken cancellationToken)
-        {
+            {
             var dashboardDetails = await dashBoardServices.GetAdminDashBoardOverview(userId, cancellationToken);
             return Ok(dashboardDetails);
         }

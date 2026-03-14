@@ -48,7 +48,7 @@ namespace CoopApplication.Persistence.Repository.Implementations
                             Phone = user.Phone,
                             Role = role.Name
                         };
-            return await query.OrderByDescending(u => u.LastName)
+            return await query.OrderByDescending(u => u.AssociationName)
                 .ToListAsync(cancellationToken);
         }
 
@@ -317,19 +317,31 @@ namespace CoopApplication.Persistence.Repository.Implementations
                     })
                     .FirstAsync(cancellationToken);
 
-            var associationDictionary = await (
+            var associationList = await (
                 from association in context.Associations
-                join user in context.Users
-                    on association.Id equals user.AssociationId into members
-                select new AssociationDto(association.Id, association.Name, association.Description, members.Count()))
-                    .ToListAsync(cancellationToken);
+                join user in context.Users on association.Id equals user.AssociationId into members
+                let memberIds = members.Select(m => m.Id)
+                select new AssociationDto(
+                    association.Id,
+                    association.Name,
+                    association.Description,
+                    members.Count(),
+
+                    new AssociationLoanSummary(
+                        context.LoanTaken.Count(l => memberIds.Contains(l.UserId)),
+                        context.LoanTaken.Where(l => memberIds.Contains(l.UserId)).Sum(l => (decimal?)l.PrincipalAmount) ?? 0,
+                        context.LoanTaken.Where(l => memberIds.Contains(l.UserId)).Sum(l => (decimal?)l.BalanceRemaining) ?? 0,
+                        context.Accounts.Where(l => memberIds.Contains(l.UserId)).Sum(l => (decimal?)l.SavingsBalance)??0
+                    )
+                )
+            ).ToListAsync(cancellationToken);
 
                 return new AdminDashBoardOverviewDto
                 {
                     AdminId = admin.Id,
                     FullName = $"Super Admin",
                     Role = "SuperAdmin",
-                    AssociationAndTotalMembers = associationDictionary,
+                    AssociationAndTotalMembers = associationList.ToList(),
                     TotalMembers = dashboardStats.TotalMembers,
                     TotalShares = dashboardStats.TotalShares,
                     TotalAmountSavedByMembers = dashboardStats.TotalSavings,
@@ -340,7 +352,4 @@ namespace CoopApplication.Persistence.Repository.Implementations
             }
 
     }
-
-    
-
 }
