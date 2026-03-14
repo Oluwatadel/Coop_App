@@ -1,4 +1,5 @@
 ﻿using CoopApplication.api.Exceptions;
+using CoopApplication.Domain.DTOs.ResponseModels;
 using CoopApplication.Domain.Entities;
 using CoopApplication.Persistence.Repository.Interfaces;
 using CoopApplication.Services.Interfaces;
@@ -25,7 +26,7 @@ namespace CoopApplication.Services.Implementations
             return createdAssociation;
         }
 
-        public async Task<IReadOnlyList<Association>> GetAllAssociation(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<AssociationDto>> GetAllAssociation(CancellationToken cancellationToken)
         {
             var associations = await associationRepository.GetAllAssociations(cancellationToken);
             return associations;
